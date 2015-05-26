@@ -2,7 +2,7 @@
 /*
 Plugin Name: Conditional Overlay
 Plugin URI: http://cornershopcreative.com/code/conditional-overlay
-Description: Show an overlay on your pages
+Description: Show a highly-configurable lightbox overlay on your pages to encourage donations, actions. etc.
 Version: 0.5
 Author: Cornershop Creative
 Author URI: http://cornershopcreative.com
@@ -10,17 +10,17 @@ License: GPLv2 or later
 Text Domain: coverlay
 */
 
-if( !defined('ABSPATH') ) { die('Direct access not allowed'); }
+if ( ! defined( 'ABSPATH' ) ) { die('Direct access not allowed'); }
 
-define('COVERLAY_VERSION', '0.5');
+define( 'COVERLAY_VERSION', '0.5' );
 
 /**
  * Checks to see if ACF PRO is installed
  */
 function coverlay_check_acf() {
 	//check if ACF PRO is installed and active. If not, send a warning
-	if ( !is_plugin_active('advanced-custom-fields-pro/acf.php') && !is_plugin_active_for_network('advanced-custom-fields-pro/acf.php')) {
-		add_action('admin_notices', 'coverlay_acf_notice');
+	if ( ! is_plugin_active( 'advanced-custom-fields-pro/acf.php' ) && ! is_plugin_active_for_network( 'advanced-custom-fields-pro/acf.php' ) ) {
+		add_action( 'admin_notices', 'coverlay_acf_notice' );
 	}
 
 }
@@ -31,7 +31,7 @@ add_action( 'admin_init', 'coverlay_check_acf' );
  */
 function coverlay_acf_notice() {
 	echo '<div class="notice error"><p>';
-	_e( 'ACF PRO not detected. Conditional Overlay will not function until ACF PRO is installed and enabled.', 'coverlay');
+	_e( 'ACF PRO not detected. Conditional Overlay will not function until ACF PRO is installed and enabled.', 'coverlay' );
 	echo '</p></div>';
 }
 
@@ -39,15 +39,15 @@ function coverlay_acf_notice() {
  * Create the options page and the fields
  */
 function coverlay_init() {
-	if ( function_exists('acf_add_options_page' ) && function_exists('register_field_group') ) {
+	if ( function_exists( 'acf_add_options_page' ) && function_exists( 'register_field_group' ) ) {
 
 		acf_add_options_page( array(
-			"page_title" => "Conditional Overlay Settings",
-			"menu_title" => "Overlay",
-			"menu_slug"  => "conditional-overlay",
-			"capability" => "edit_theme_options",
-			"icon_url"   => "dashicons-screenoptions",
-			"position"   => 3
+			'page_title' => 'Conditional Overlay Settings',
+			'menu_title' => 'Overlay',
+			'menu_slug'  => 'conditional-overlay',
+			'capability' => 'edit_theme_options',
+			'icon_url'   => 'dashicons-screenoptions',
+			'position'   => 3,
 		) );
 
 		include_once __DIR__ . '/fields.php';
@@ -67,10 +67,12 @@ function coverlay_footer() {
 	echo '</style>';
 
 	// Output our lightbox content
-	$context = get_field('coverlay_visibility', 'options');
+	$context = get_field( 'coverlay_visibility', 'options' );
+	$max_width = get_field( 'coverlay_max_width', 'options' );
+	$inner_style = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
 	if ( 'all' == $context || ( is_front_page() && 'home' == $context ) ) {
-		echo '<div id="coverlay-content" style="display: none !important"><div id="coverlay-inner">';
-		the_field('coverlay_content', 'options');
+		echo '<div id="coverlay-content" style="display: none !important"><div id="coverlay-inner" ' . wp_kses( $inner_style ) . '>';
+		the_field( 'coverlay_content', 'options' );
 		echo '</div></div>';
 	}
 
@@ -83,11 +85,11 @@ add_action( 'wp_footer', 'coverlay_footer' );
  */
 function coverlay_js() {
 
-	if ( !is_admin() ) {
+	if ( ! is_admin() ) {
 		wp_enqueue_script(
-			"coverlay-js",
-			plugins_url('/coverlay.js', __FILE__ ),
-			array( "jquery" ),
+			'coverlay-js',
+			plugins_url( '/coverlay.js', __FILE__ ),
+			array( 'jquery' ),
 			COVERLAY_VERSION,
 			true
 		);
@@ -102,11 +104,12 @@ add_action( 'wp_enqueue_scripts', 'coverlay_js' );
  */
 function coverlay_echo_config() {
 	$config = array(
-		'context'   => get_field('coverlay_visibility', 'options'),
-		'suppress'  => get_field('coverlay_suppress', 'options'),
-		'trigger'   => get_field('coverlay_trigger', 'options'),
-		'amount'    => get_field('coverlay_trigger_amount', 'options'),
-		'id'        => sanitize_title_with_dashes( get_field('coverlay_id', 'options') )
+		'context'   => get_field( 'coverlay_visibility', 'options' ),
+		'suppress'  => get_field( 'coverlay_suppress', 'options' ),
+		'trigger'   => get_field( 'coverlay_trigger', 'options' ),
+		'amount'    => get_field( 'coverlay_trigger_amount', 'options' ),
+		'max_width' => get_field( 'coverlay_max_width', 'options' ),
+		'id'        => sanitize_title_with_dashes( get_field( 'coverlay_id', 'options' ) )
 	);
 	echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
 }
