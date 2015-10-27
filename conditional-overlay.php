@@ -70,7 +70,7 @@ function coverlay_footer() {
 	$context = get_field( 'coverlay_visibility', 'options' );
 	$max_width = get_field( 'coverlay_max_width', 'options' );
 	$inner_style = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
-	if ( 'all' == $context || ( is_front_page() && 'home' == $context ) ) {
+	if ( 'all' == $context || ( is_front_page() && 'home' == $context ) || ( !is_front_page() && 'all_but_homepage' == $context ) ) {
 		echo '<div id="coverlay-content" style="display: none !important"><div id="coverlay-inner" ' . wp_kses( $inner_style ) . '>';
 		the_field( 'coverlay_content', 'options' );
 		echo '</div></div>';

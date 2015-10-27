@@ -13,7 +13,8 @@ if(function_exists("register_field_group")) {
 				'choices' => array (
 					'home' => 'Homepage',
 					'all' => 'All Pages',
-					'none' => 'Nowhere',
+					'all_but_homepage' => 'All Pages But the Homepage',
+					'none' => 'Nowhere'
 				),
 				'default_value' => '',
 				'allow_null' => 0,
