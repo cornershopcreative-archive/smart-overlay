@@ -46,6 +46,13 @@
 					openLightbox();
 				}
 			});
+		} else if ( 'scroll-full' == settings.trigger ) {
+			var offsetFullHeight = $(document).height() - 20;
+			$(window).on('scroll', function() {
+				if ( $(window).scrollTop() + $(window).height() >= offsetFullHeight ) {
+					openLightbox();
+				}
+			});
 		} else if ( 'pages' == settings.trigger ) {
 			var pageCount = $.cookie('coverlay-pages-' + settings.id) || 0;
 			if ( ++pageCount >= settings.amount ) {
