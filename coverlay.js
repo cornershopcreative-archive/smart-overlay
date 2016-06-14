@@ -76,7 +76,12 @@
 			if ( alreadyOpened ) return;
 
 			// width... somewhere?
-			$.featherlight( $('#coverlay-inner'), {type:'html'});
+			$.featherlight( $('#coverlay-inner'), {
+				type:'html',
+				afterOpen: function(e) {
+					$( document ).trigger( 'coverlayOpen' );
+				}
+			});
 			alreadyOpened = true;
 
 			// never hide
