@@ -3,7 +3,7 @@
 Plugin Name: Conditional Overlay
 Plugin URI: http://cornershopcreative.com/code/conditional-overlay
 Description: Show a highly-configurable lightbox overlay on your pages to encourage donations, actions. etc.
-Version: 0.5
+Version: 0.5.1
 Author: Cornershop Creative
 Author URI: http://cornershopcreative.com
 License: GPLv2 or later
