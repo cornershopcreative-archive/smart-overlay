@@ -77,6 +77,7 @@
 
 			// width... somewhere?
 			$.featherlight( $('#coverlay-inner'), {
+				namespace: 'fl-coverlay',
 				type:'html',
 				afterOpen: function(e) {
 					$( document ).trigger( 'coverlayOpen' );
