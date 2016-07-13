@@ -40,15 +40,15 @@
 				}
 			});
 		} else if ( 'scroll-half' == settings.trigger ) {
-			var halfHeight = ( $(document).height() / 2 ) - 20;
 			$(window).on('scroll', function() {
+				var halfHeight = ( $(document).height() / 2 ) - 20;
 				if ( $(window).scrollTop() >= halfHeight ) {
 					openLightbox();
 				}
 			});
 		} else if ( 'scroll-full' == settings.trigger ) {
-			var offsetFullHeight = $(document).height() - 20;
 			$(window).on('scroll', function() {
+				var offsetFullHeight = $(document).height() - 20;
 				if ( $(window).scrollTop() + $(window).height() >= offsetFullHeight ) {
 					openLightbox();
 				}
