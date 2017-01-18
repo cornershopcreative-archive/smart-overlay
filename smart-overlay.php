@@ -94,7 +94,7 @@ function coverlay_footer() {
 	}
 
 }
-add_action( 'wp_footer', 'coverlay_footer' );
+//add_action( 'wp_footer', 'coverlay_footer' );
 
 add_action( 'manage_smart_overlay_posts_custom_column' , 'smart_overlay_custom_columns', 10, 2 );
 
@@ -156,6 +156,42 @@ function coverlay_js() {
 add_action( 'wp_enqueue_scripts', 'coverlay_js' );
 
 
+function smart_overlay_display( ) {
+	global $post;
+	$prefix = 'smart_overlay_';
+	$args = array(
+		'post_type' => 'smart_overlay',
+		'posts_per_page' => -1
+	);
+
+	$get_smart_overlays = new WP_Query($args);
+	if ( $get_smart_overlays->have_posts() ): while( $get_smart_overlays->have_posts() ):
+		$get_smart_overlays->the_post();
+		$smart_overlay_id = get_the_ID();
+		$custom_fields = get_metadata('post', $smart_overlay_id);
+		$display_filter = $custom_fields[$prefix.'display_lightbox_on'];
+
+		if ( ($display_filter ==='home' && is_home()) || ($display_filter === 'all_but_homepage' && !is_home()) || ($display_filter === 'all') ) {
+			$config = array(
+				'context'   => $display_filter,
+				'suppress'  => $custom_fields[$prefix.'suppress'],
+				'trigger'   => $custom_fields[$prefix.'trigger'],
+				'amount'    => $custom_fields[$prefix.'trigger_amount'],
+				'max_width' => $custom_fields[$prefix.'max_width'],
+				'id'        => sanitize_title_with_dashes( $custom_fields[$prefix.'overlay_identifier'] )
+			);
+			echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
+			
+			break;
+		}
+	endwhile;endif;
+
+	wp_reset_postdata();
+	wp_reset_query();
+}
+
+add_action( 'wp_head', 'smart_overlay_display' );
+
 /**
  * Outputs the theme options into a JS var for use
  */
@@ -173,4 +209,4 @@ function coverlay_echo_config() {
 	);
 	echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
 }
-add_action( 'wp_head', 'coverlay_echo_config' );
+//add_action( 'wp_head', 'coverlay_echo_config' );
