@@ -51,18 +51,19 @@ function smart_overlay_post_type() {
 		'label'                 => __( 'Smart Overlay', 'smart_overlay' ),
 		'description'           => __( 'Page overlays for a client\'s website', 'smart_overlay' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title', 'editor', 'thumbnail', ),
+		'supports'              => array( 'title', 'editor' ),
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,
 		'show_in_menu'          => true,
-		'menu_position'         => 5,
+		'menu_position'         => 30,
+		'menu_icon'             => 'dashicons-slides',
 		'show_in_admin_bar'     => true,
 		'show_in_nav_menus'     => true,
 		'can_export'            => true,
-		'has_archive'           => true,
+		'has_archive'           => false,
 		'exclude_from_search'   => true,
-		'publicly_queryable'    => true,
+		'publicly_queryable'    => false,
 		'capability_type'       => 'page',
 	);
 	register_post_type( 'smart_overlay', $args );
@@ -181,7 +182,7 @@ function smart_overlay_display( ) {
 				'id'        => sanitize_title_with_dashes( $custom_fields[$prefix.'overlay_identifier'] )
 			);
 			echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
-			
+
 			break;
 		}
 	endwhile;endif;
