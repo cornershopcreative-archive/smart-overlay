@@ -15,9 +15,27 @@ function smart_overlay_custom_fields() {
 	$smart_overlay_fields = new_cmb2_box( array(
 		'id'            => $prefix . 'options',
 		'title'         => __( 'Smart Overlay Options', 'cmb2' ),
-		'object_types'  => $post_type, // Post type,
+		'object_types'  => $post_type,
 		'context'    => 'side',
 		'priority'   => 'low'
+	) );
+
+	$smart_overlay_fields->add_field( array(
+		'name'    => 'Background Image',
+		'desc'    => 'Upload / Choose an image to be used for overlay background',
+		'id'      => $prefix . 'bg_image',
+		'type'    => 'file',
+		// Optional:
+		'options' => array(
+			'url' => false, // Hide the text input for the url
+		),
+		'text'    => array(
+			'add_upload_file_text' => 'Add Image' // Change upload button text. Default: "Add or Upload File"
+		),
+		// query_args are passed to wp.media's library query.
+		'query_args' => array(
+			'type' => array( 'type' => 'image' ) // Make library only display images.
+		),
 	) );
 
 	$smart_overlay_fields->add_field( array(
@@ -39,12 +57,12 @@ function smart_overlay_custom_fields() {
 		'id'               => $prefix . 'suppress',
 		'type'             => 'select',
 		'options'          => array(
-			'never' => __( 'Never show again', 'cmb2' ),
+			'always' => __( 'Never show again', 'cmb2' ),
 			'session'   => __( 'Don\'t show again this browser session', 'cmb2' ),
 			'wait-7'     => __( 'Wait a week before showing again', 'cmb2' ),
 			'wait-30' => __( 'Wait 30 days before showing again', 'cmb2' ),
 			'wait-90' => __( 'Wait 90 days before showing again', 'cmb2' ),
-			'always' => __( 'Keep showing it', 'cmb2' )
+			'never' => __( 'Keep showing it', 'cmb2' )
 		)
 	) );
 
@@ -65,7 +83,7 @@ function smart_overlay_custom_fields() {
 	) );
 
 	$smart_overlay_fields->add_field( array(
-		'name' => __( 'Trigger amount', 'cmb2' ),
+		'name' => __( 'Trigger Amount', 'cmb2' ),
 		'desc' => __( 'Specify the precise quantity/time/amount/number for the above', 'cmb2' ),
 		'id'   => $prefix . 'trigger_amount',
 		'type' => 'text_small',
@@ -85,6 +103,14 @@ function smart_overlay_custom_fields() {
 		'type' => 'text_small',
 		'after_field'  => 'px',
 	) );
+
+	$smart_overlay_fields->add_field( array(
+		'name' => 'Disable On Mobile',
+		'desc' => 'Check this box to disable overlay on mobile devices',
+		'id'   => $prefix . 'disable_on_mobile',
+		'type' => 'checkbox',
+	) );
+
 }
 
 add_action( 'quick_edit_custom_box', 'smart_overlay_quick_edit', 10, 2 );
@@ -119,163 +145,3 @@ function smart_overlay_quick_edit( $column_name, $post_type ) {
 		<?php
 	}
 }
-/*if(function_exists("register_field_group")) {
-	register_field_group(array (
-		'id' => 'acf_lightbox-options',
-		'title' => 'Lightbox Options',
-		'fields' => array (
-			array (
-				'key' => 'field_555ca8052ed11',
-				'label' => 'Display Lightbox On',
-				'name' => 'coverlay_visibility',
-				'type' => 'select',
-				'choices' => array (
-					'home' => 'Homepage',
-					'all' => 'All Pages',
-					'all_but_homepage' => 'All Pages But the Homepage',
-					'none' => 'Nowhere'
-				),
-				'default_value' => '',
-				'allow_null' => 0,
-				'multiple' => 0,
-			),
-			array (
-				'key' => 'field_555ca85e2ed12',
-				'label' => 'Once Seen',
-				'name' => 'coverlay_suppress',
-				'type' => 'select',
-				'instructions' => 'What should happen once a user has seen the lightbox once?',
-				'choices' => array (
-					'never' => 'Keep showing it',
-					'session' => 'Don\'t show again this browser session',
-					'wait-7' => 'Wait a week before showing again',
-					'wait-30' => 'Wait 30 days before showing again',
-					'wait-90' => 'Wait 90 days before showing again',
-					'always' => 'Never show again',
-				),
-				'default_value' => 'wait-7',
-				'allow_null' => 0,
-				'multiple' => 0,
-			),
-			array (
-				'key' => 'field_555ca9682ed13',
-				'label' => 'Trigger',
-				'name' => 'coverlay_trigger',
-				'type' => 'select',
-				'instructions' => 'When does the lightbox appear?',
-				'choices' => array (
-					'immediate' => 'Immediately on page load',
-					'delay' => 'N seconds after load (specify)',
-					'scroll' => 'After page is scrolled N pixels (specify)',
-					'scroll-half' => 'After page is scrolled halfway',
-					'scroll-full' => 'At bottom of page',
-					'minutes' => 'After N minutes spent on site this visit (specify)',
-					'pages' => 'Once N pages have been visited in last 90 days (specify)',
-				),
-				'default_value' => 'immediate',
-				'allow_null' => 0,
-				'multiple' => 0,
-			),
-			array (
-				'key' => 'field_555caca92ed16',
-				'label' => 'Trigger amount',
-				'name' => 'coverlay_trigger_amount',
-				'type' => 'number',
-				'instructions' => 'Specify the precise quantity/time/amount/number for the above',
-				'conditional_logic' => array (
-					'status' => 1,
-					'rules' => array (
-						array (
-							'field' => 'field_555ca9682ed13',
-							'operator' => '!=',
-							'value' => 'immediate',
-						),
-						array (
-							'field' => 'field_555ca9682ed13',
-							'operator' => '!=',
-							'value' => 'scroll-half',
-						),
-						array (
-							'field' => 'field_555ca9682ed13',
-							'operator' => '!=',
-							'value' => 'scroll-full',
-						),
-					),
-					'allorany' => 'all',
-				),
-				'default_value' => '',
-				'placeholder' => '',
-				'prepend' => '',
-				'append' => '',
-				'min' => '',
-				'max' => '',
-				'step' => 1,
-			),
-			array (
-				'key' => 'field_555cabc52ed14',
-				'label' => 'Content',
-				'name' => 'coverlay_content',
-				'type' => 'wysiwyg',
-				'default_value' => '',
-				'toolbar' => 'basic',
-				'media_upload' => 'yes',
-			),
-			array (
-				'key' => 'field_555cac132ed15',
-				'label' => 'Overlay Identifier',
-				'name' => 'overlay_id',
-				'prefix' => '',
-				'type' => 'text',
-				'instructions' => 'Enter a name or number to uniquely identify the current overlay. Change this when revising the overlay content so as to reset users\' cookies.',
-				'required' => 1,
-				'conditional_logic' => 0,
-				'default_value' => '',
-				'placeholder' => '',
-				'prepend' => '',
-				'append' => '',
-				'maxlength' => 64,
-				'readonly' => 0,
-				'disabled' => 0,
-			),
-			array (
-				'key' => 'field_5564c912cdd8d',
-				'label' => 'Max Width',
-				'name' => 'coverlay_max_width',
-				'prefix' => '',
-				'type' => 'number',
-				'instructions' => '',
-				'required' => 0,
-				'conditional_logic' => 0,
-				'default_value' => '',
-				'placeholder' => '',
-				'prepend' => '',
-				'append' => 'px',
-				'min' => '',
-				'max' => '',
-				'step' => 1,
-				'readonly' => 0,
-				'disabled' => 0,
-			),
-		),
-		'location' => array (
-			array (
-				array (
-					'param' => 'options_page',
-					'operator' => '==',
-					'value' => 'conditional-overlay',
-					'order_no' => 0,
-					'group_no' => 0,
-				),
-			),
-		),
-		'options' => array (
-			'position' => 'normal',
-			'layout' => 'default',
-			'hide_on_screen' => array (
-			),
-		),
-		'menu_order' => 0,
-	));
-}
-
-*/

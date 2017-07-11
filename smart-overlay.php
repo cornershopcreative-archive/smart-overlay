@@ -7,12 +7,12 @@ Version: 0.5.6
 Author: Cornershop Creative
 Author URI: http://cornershopcreative.com
 License: GPLv2 or later
-Text Domain: coverlay
+Text Domain: smart-overlay
 */
 
 if ( ! defined( 'ABSPATH' ) ) { die('Direct access not allowed'); }
 
-define( 'COVERLAY_VERSION', '0.5' );
+define( 'SMART_OVERLAY_VERSION', '0.5' );
 
 // include CMB2 for custom metaboxes
 require_once dirname( __FILE__ ) . '/fields.php';
@@ -72,31 +72,6 @@ function smart_overlay_post_type() {
 add_action( 'init', 'smart_overlay_post_type', 0 );
 
 
-
-/**
- * Stuff for the footer
- */
-function coverlay_footer() {
-
-	// Load up our CSS
-	// We inline CSS because why waste HTTP connections?
-	echo '<style id="coverlay-inline-css">';
-	include_once('coverlay.css');
-	echo '</style>';
-
-	// Output our lightbox content
-	$context = get_field( 'coverlay_visibility', 'options' );
-	$max_width = get_field( 'coverlay_max_width', 'options' );
-	$inner_style = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
-	if ( 'all' == $context || ( is_front_page() && 'home' == $context ) || ( !is_front_page() && 'all_but_homepage' == $context ) ) {
-		echo '<div id="coverlay-content" style="display: none !important"><div id="coverlay-inner" ' . wp_kses( $inner_style, array('style') ) . '>';
-		the_field( 'coverlay_content', 'options' );
-		echo '</div></div>';
-	}
-
-}
-//add_action( 'wp_footer', 'coverlay_footer' );
-
 add_action( 'manage_smart_overlay_posts_custom_column' , 'smart_overlay_custom_columns', 10, 2 );
 
 function smart_overlay_custom_columns( $column, $post_id ) {
@@ -145,10 +120,10 @@ function coverlay_js() {
 
 	if ( ! is_admin() ) {
 		wp_enqueue_script(
-			'coverlay-js',
-			plugins_url( '/coverlay.js', __FILE__ ),
+			'smart-overlay-js',
+			plugins_url( '/smart-overlay.js', __FILE__ ),
 			array( 'jquery' ),
-			COVERLAY_VERSION,
+			SMART_OVERLAY_VERSION,
 			true
 		);
 	}
@@ -156,35 +131,97 @@ function coverlay_js() {
 }
 add_action( 'wp_enqueue_scripts', 'coverlay_js' );
 
+function set_smart_overlay_variables() {
+	
+	global $get_smart_overlays;
+	global $smart_overlay_prefix;
+	global $current_smart_overlay_id;
 
-function smart_overlay_display( ) {
-	global $post;
-	$prefix = 'smart_overlay_';
+	$current_smart_overlay_id = '';
+
+	$smart_overlay_prefix = 'smart_overlay_';
+
 	$args = array(
 		'post_type' => 'smart_overlay',
-		'posts_per_page' => -1
+		'posts_per_page' => -1,
+		'order' => 'DESC',
+		'orderby' => 'modified',
+		'meta_query' => array(
+			array(
+				'key' => $smart_overlay_prefix .'display_lightbox_on',
+				'value' => 'none',
+				'compare' => '!='
+			),
+		)
 	);
 
-	$get_smart_overlays = new WP_Query($args);
+	$get_smart_overlays = new WP_Query( $args );
+}
+
+add_action( 'init', 'set_smart_overlay_variables' );
+
+function smart_overlay_display( ) {
+	global $get_smart_overlays;
+	global $smart_overlay_prefix;
+	global $current_smart_overlay_id;
+
 	if ( $get_smart_overlays->have_posts() ): while( $get_smart_overlays->have_posts() ):
 		$get_smart_overlays->the_post();
+
 		$smart_overlay_id = get_the_ID();
-		$custom_fields = get_metadata('post', $smart_overlay_id);
-		$display_filter = $custom_fields[$prefix.'display_lightbox_on'];
+		$display_filter = get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'display_lightbox_on')[0];
+		$disable_on_mobile = get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'disable_on_mobile', 1 );
 
-		if ( ($display_filter ==='home' && is_home()) || ($display_filter === 'all_but_homepage' && !is_home()) || ($display_filter === 'all') ) {
-			$config = array(
-				'context'   => $display_filter,
-				'suppress'  => $custom_fields[$prefix.'suppress'],
-				'trigger'   => $custom_fields[$prefix.'trigger'],
-				'amount'    => $custom_fields[$prefix.'trigger_amount'],
-				'max_width' => $custom_fields[$prefix.'max_width'],
-				'id'        => sanitize_title_with_dashes( $custom_fields[$prefix.'overlay_identifier'] )
-			);
-			echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
+		$home_page_overlay = false;
 
-			break;
+		if ( $display_filter === 'home' && is_front_page() ) {
+			$home_page_overlay = true;
 		}
+
+		$config = array(
+			'background' => get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'bg_image')[0],
+			'context'   => $display_filter,
+			'suppress'  => get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'suppress')[0],
+			'trigger'   => get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'trigger')[0],
+			'amount'    => get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'trigger_amount')[0],
+			'max_width' => get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'max_width')[0],
+			'id'        => sanitize_title_with_dashes( get_post_meta( $smart_overlay_id, $smart_overlay_prefix.'overlay_identifier')[0] )
+		);
+
+		if ( is_front_page() ) { // Only Homepage
+
+			if ( $display_filter === 'home' || ( $display_filter === 'all' && $home_page_overlay === false ) ) {
+
+				if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
+
+					echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
+
+					$current_smart_overlay_id = $smart_overlay_id;
+
+					break;
+
+				}
+
+			}
+
+		} else { // Not Homepage
+
+			if ( $display_filter === 'all_but_homepage' || $display_filter === 'all' ) {
+
+				if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
+
+					echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
+
+					$current_smart_overlay_id = $smart_overlay_id;
+
+					break;
+
+				}
+
+			}
+
+		}
+
 	endwhile;endif;
 
 	wp_reset_postdata();
@@ -194,20 +231,32 @@ function smart_overlay_display( ) {
 add_action( 'wp_head', 'smart_overlay_display' );
 
 /**
- * Outputs the theme options into a JS var for use
+ * Stuff for the footer
  */
-function coverlay_echo_config() {
-	$query = new WP_Query(array(
-		'post_type' => ''
-	));
-	$config = array(
-		'context'   => get_field( 'coverlay_visibility', 'options' ),
-		'suppress'  => get_field( 'coverlay_suppress', 'options' ),
-		'trigger'   => get_field( 'coverlay_trigger', 'options' ),
-		'amount'    => get_field( 'coverlay_trigger_amount', 'options' ),
-		'max_width' => get_field( 'coverlay_max_width', 'options' ),
-		'id'        => sanitize_title_with_dashes( get_field( 'coverlay_id', 'options' ) )
-	);
-	echo '<script>window.coverlay_opts = ' . json_encode( $config ) . ';</script>';
+function coverlay_footer() {
+
+	global $smart_overlay_prefix;
+	global $current_smart_overlay_id;
+
+
+	// Load up our CSS
+	// We inline CSS because why waste HTTP connections?
+	echo '<style id="smart-overlay-inline-css">';
+	include_once('smart-overlay.css');
+	echo '</style>';
+	
+
+		$display_filter = get_post_meta( $current_smart_overlay_id, $smart_overlay_prefix.'display_lightbox_on')[0];
+		$max_width = get_post_meta( $current_smart_overlay_id, $smart_overlay_prefix.'max_width')[0];
+		$content = apply_filters('the_content', get_post_field('post_content', $current_smart_overlay_id));
+
+		// Output our lightbox content
+		$inner_style = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
+		if ( $current_smart_overlay_id !== '' ) {
+			echo '<div id="smart-overlay-content" style="display: none !important"><div id="smart-overlay-inner" ' . wp_kses( $inner_style, array('style') ) . '>';
+				echo $content;
+			echo '</div></div>';
+		}
+
 }
-//add_action( 'wp_head', 'coverlay_echo_config' );
+add_action( 'wp_footer', 'coverlay_footer' );

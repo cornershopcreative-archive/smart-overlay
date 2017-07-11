@@ -3,17 +3,18 @@
  */
 (function($) {
 
-	$.coverlay = function( options ) {
+	$.smartoverlay = function( options ) {
 		options = options || window.coverlay_opts;
 		var force = window.location.search.indexOf("forceoverlay");
 		var alreadyOpened = false;
 		var settings = $.extend({
+			background : null,
 			context : 'none',
 			suppress: 'never',
 			trigger : 'immediate',
 			amount  : 1,
 			width   : 600,
-			id      : 'coverlay'
+			id      : 'smart-overlay'
 		}, options );
 
 		// @todo refactor all code to still increment timers, etc even when not on pages that lightbox will be displayed on...
@@ -24,7 +25,7 @@
 		if ( 'home' === settings.context && !$('body').hasClass('home') ) return;
 
 		// ...or if the already-seen cookie is still around
-		if ( $.cookie('coverlay-seen-' + settings.id ) == 'true' && force === -1 ) return;
+		if ( $.cookie('smart-overlay-seen-' + settings.id ) == 'true' && force === -1 ) return;
 
 		// let's see if we meet our open criteria!
 		// right away
@@ -54,18 +55,18 @@
 				}
 			});
 		} else if ( 'pages' == settings.trigger ) {
-			var pageCount = $.cookie('coverlay-pages-' + settings.id) || 0;
+			var pageCount = $.cookie('smart-overlay-pages-' + settings.id) || 0;
 			if ( ++pageCount >= settings.amount ) {
 				openLightbox();
-				$.removeCookie('coverlay-pages-' + settings.id, { expires: 90, path: '/' });
+				$.removeCookie('smart-overlay-pages-' + settings.id, { expires: 90, path: '/' });
 			} else {
-				$.cookie('coverlay-pages-' + settings.id, pageCount, { expires: 90, path: '/' });
+				$.cookie('smart-overlay-pages-' + settings.id, pageCount, { expires: 90, path: '/' });
 			}
 		} else if ( 'minutes' == settings.trigger ) {
-			var minuteCount = parseFloat($.cookie('coverlay-minutes-' + settings.id)) || 0;
+			var minuteCount = parseFloat($.cookie('smart-overlay-minutes-' + settings.id)) || 0;
 			if ( minuteCount >= settings.amount ) {
 				openLightbox();
-				$.removeCookie('coverlay-minutes-' + settings.id, { path: '/' });
+				$.removeCookie('smart-overlay-minutes-' + settings.id, { path: '/' });
 			} else {
 				setInterval( function() { lightboxTimer(); }, 6000 );
 			}
@@ -76,11 +77,14 @@
 			if ( alreadyOpened ) return;
 
 			// width... somewhere?
-			$.featherlight( $('#coverlay-inner'), {
-				namespace: 'fl-coverlay',
+			$.featherlight( $('#smart-overlay-inner'), {
+				namespace: 'smart-overlay',
 				type:'html',
+				beforeOpen: function(e) {
+					$('.smart-overlay-content').css('background-image', 'url(' + settings.background + ')');
+				},
 				afterOpen: function(e) {
-					$( document ).trigger( 'coverlayOpen' );
+					$( document ).trigger( 'smartOverlayOpen' );
 				}
 			});
 			alreadyOpened = true;
@@ -101,19 +105,19 @@
 				cookieOpts.expires = 30;
 			}
 
-			$.cookie( 'coverlay-seen-' + settings.id, 'true', cookieOpts );
+			$.cookie( 'smart-overlay-seen-' + settings.id, 'true', cookieOpts );
 		}
 
 		function lightboxTimer() {
 			var maxMinutes = settings.amount,
-				timePassed = parseFloat($.cookie('coverlay-minutes-' + settings.id)) || 0;
+				timePassed = parseFloat($.cookie('smart-overlay-minutes-' + settings.id)) || 0;
 			// increment every half-second (setInterval = 500)
 			timePassed += 0.1;
 			if ( timePassed >= maxMinutes ) {
 				openLightbox();
-				$.removeCookie('coverlay-minutes-' + settings.id, { path: '/' });
+				$.removeCookie('smart-overlay-minutes-' + settings.id, { path: '/' });
 			} else {
-				$.cookie('coverlay-minutes-' + settings.id, timePassed, { path: '/'});
+				$.cookie('smart-overlay-minutes-' + settings.id, timePassed, { path: '/'});
 			}
 		}
 
@@ -121,7 +125,7 @@
 }(jQuery));
 
 jQuery(document).ready(function($) {
-	$.coverlay();
+	$.smartoverlay();
 });
 
 /**
