@@ -10,7 +10,8 @@ License: GPLv2 or later
 Text Domain: smart-overlay
 */
 
-if ( ! defined( 'ABSPATH' ) ) { die('Direct access not allowed'); }
+if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Direct access not allowed' ); }
 
 define( 'SMART_OVERLAY_VERSION', '0.6' );
 
@@ -82,27 +83,27 @@ function smart_overlay_custom_columns( $column, $post_id ) {
 				'home'             => __( 'Homepage', 'smart_overlay' ),
 				'all'              => __( 'All Pages', 'smart_overlay' ),
 				'all_but_homepage' => __( 'All But Homepage', 'smart_overlay' ),
-				'none'             => __( 'Nowhere (disabled)', 'smart_overlay' )
+				'none'             => __( 'Nowhere (disabled)', 'smart_overlay' ),
 			);
-			esc_html_e( $display_options[get_post_meta($post_id, $field, true)], 'smart_overlay' );
+			esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 			break;
 
 		case 'trigger':
 			$field = 'smart_overlay_trigger';
-			$amount = get_post_meta($post_id, 'smart_overlay_trigger_amount', true);
+			$amount = get_post_meta( $post_id, 'smart_overlay_trigger_amount', true );
 			$display_options = array(
 				'immediate'   => __( 'Immediately on page load', 'smart_overlay' ),
-				'delay'       => __( sprintf('%s seconds after load', $amount), 'smart_overlay' ),
-				'scroll'      => __( sprintf('After page is scrolled %s pixels', $amount), 'smart_overlay' ),
+				'delay'       => __( sprintf( '%s seconds after load', $amount ), 'smart_overlay' ),
+				'scroll'      => __( sprintf( 'After page is scrolled %s pixels', $amount ), 'smart_overlay' ),
 				'scroll-half' => __( 'After page is scrolled halfway', 'smart_overlay' ),
 				'scroll-full' => __( 'At bottom of page', 'smart_overlay' ),
-				'minutes'     => __( sprintf('After %s minutes spent on site this visit', $amount), 'smart_overlay' ),
-				'pages'       => __( sprintf('Once %s pages have been visited in last 90 days', $amount), 'smart_overlay' )
+				'minutes'     => __( sprintf( 'After %s minutes spent on site this visit', $amount ), 'smart_overlay' ),
+				'pages'       => __( sprintf( 'Once %s pages have been visited in last 90 days', $amount ), 'smart_overlay' ),
 			);
-			esc_html_e( $display_options[get_post_meta($post_id, $field, true)], 'smart_overlay' );
+			esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 			break;
 
-	}
+	}//end switch
 
 }
 add_action( 'manage_smart_overlay_posts_custom_column' , 'smart_overlay_custom_columns', 10, 2 );
@@ -110,7 +111,7 @@ add_action( 'manage_smart_overlay_posts_custom_column' , 'smart_overlay_custom_c
 
 // Declare columns for the post list admin page.
 function smart_overlay_add_columns( $columns ) {
-	unset($columns['date']);
+	unset( $columns['date'] );
 	$columns['displayed_on'] = __( 'Displayed On', 'smart_overlay' );
 	$columns['trigger'] = __( 'Trigger', 'smart_overlay' );
 	$columns['date'] = __( 'Date', 'smart_overlay' );
@@ -148,7 +149,7 @@ function set_smart_overlay_variables() {
 
 	$smart_overlay_config = new stdClass();
 	$smart_overlay_config->current_id = '';
-	$smart_overlay_config->prefix = apply_filters( 'smart_overlay_prefix', 'smart_overlay_' ) ;
+	$smart_overlay_config->prefix = apply_filters( 'smart_overlay_prefix', 'smart_overlay_' );
 
 	$query_args = array(
 		'post_type'      => 'smart_overlay',
@@ -157,11 +158,11 @@ function set_smart_overlay_variables() {
 		'orderby'        => 'modified',
 		'meta_query'     => array(
 			array(
-				'key'     => $smart_overlay_prefix .'display_lightbox_on',
+				'key'     => $smart_overlay_prefix . 'display_lightbox_on',
 				'value'   => 'none',
-				'compare' => '!='
+				'compare' => '!=',
 			),
-		)
+		),
 	);
 
 	$smart_overlay_config->overlays = new WP_Query( $args );
@@ -174,77 +175,74 @@ add_action( 'init', 'set_smart_overlay_variables' );
  * Based on the current page/thing being displayed, and the overlays available, output into the page <head>
  * a JS object with the appropriate overlay settings.
  */
-function smart_overlay_display( ) {
+function smart_overlay_display() {
 
 	global $smart_overlay_config;
 	$home_page_overlay_found = false;
 
 	// Obviously we can only do this if there are some overlay posts defined...
+	if ( $smart_overlay_config->overlays->have_posts() ) :
+		while ( $smart_overlay_config->overlays->have_posts() ) :
 
-	if ( $smart_overlay_config->overlays->have_posts() ) : while( $smart_overlay_config->overlays->have_posts() ):
+			$smart_overlay_config->overlays->the_post();
 
-		$smart_overlay_config->overlays->the_post();
+			// Get the meta values from the current overlay.
+			$smart_overlay_id  = get_the_ID();
+			$display_filter    = get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'display_lightbox_on' )[0];
+			$disable_on_mobile = get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'disable_on_mobile', 1 );
 
-		// Get the meta values from the current overlay.
-		$smart_overlay_id  = get_the_ID();
-		$display_filter    = get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'display_lightbox_on' )[0];
-		$disable_on_mobile = get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'disable_on_mobile', 1 );
+			$home_page_overlay = false;
 
-		$home_page_overlay = false;
-
-		// Set a special flag for overlays set to just the homepage when we're on the homepage, so they overrule any overlays set to 'all'
-		if ( 'home' === $display_filter && is_front_page() ) {
-			$home_page_overlay_found = true;
-		}
-
-		// Prepare our config object
-		$config = array(
-			'background' => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'bg_image' )[0],
-			'context'    => $display_filter,
-			'suppress'   => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'suppress' )[0],
-			'trigger'    => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'trigger' )[0],
-			'amount'     => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'trigger_amount' )[0],
-			'max_width'  => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'max_width' )[0],
-			'id'         => sanitize_title_with_dashes( get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'overlay_identifier' )[0] )
-		);
-
-		$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . json_encode( $config ) . ';</script>';
-
-		if ( is_front_page() ) { // Only Homepage
-
-			if ( 'home' === $display_filter  || ( 'all' === $display_filter  && ! $home_page_overlay_found ) ) {
-
-				if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
-
-					echo $script_tag;
-
-					$smart_overlay_config->current_id = $smart_overlay_id;
-
-					break;	// Once we get a single smart overlay, we can stop.
-
-				}
-
+			// Set a special flag for overlays set to just the homepage when we're on the homepage, so they overrule any overlays set to 'all'
+			if ( 'home' === $display_filter && is_front_page() ) {
+				$home_page_overlay_found = true;
 			}
 
-		} else { // Not Homepage
+			// Prepare our config object
+			$config = array(
+				'background' => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'bg_image' )[0],
+				'context'    => $display_filter,
+				'suppress'   => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'suppress' )[0],
+				'trigger'    => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'trigger' )[0],
+				'amount'     => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'trigger_amount' )[0],
+				'max_width'  => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'max_width' )[0],
+				'id'         => sanitize_title_with_dashes( get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'overlay_identifier' )[0] ),
+			);
 
-			if ( 'all_but_homepage' === $display_filter || 'all' === $display_filter ) {
+					$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . json_encode( $config ) . ';</script>';
 
-				if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
+			if ( is_front_page() ) {
+				// Only Homepage
+				if ( 'home' === $display_filter || ( 'all' === $display_filter  && ! $home_page_overlay_found ) ) {
 
-					echo $script_tag;
+					if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
 
-					$smart_overlay_config->current_id = $smart_overlay_id;
+						echo $script_tag;
 
-					break;
+						$smart_overlay_config->current_id = $smart_overlay_id;
 
+						break;
+						// Once we get a single smart overlay, we can stop.
+					}
 				}
+			} else {
+				// Not Homepage
+				if ( 'all_but_homepage' === $display_filter || 'all' === $display_filter ) {
 
-			}
+					if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
 
-		}
+						echo $script_tag;
 
-	endwhile;endif;
+						$smart_overlay_config->current_id = $smart_overlay_id;
+
+						break;
+
+					}
+				}
+			}//end if
+
+	endwhile;
+endif;
 
 	wp_reset_postdata();
 	wp_reset_query();
@@ -260,20 +258,22 @@ function smart_overlay_footer() {
 	global $smart_overlay_config;
 
 	// Don't do anything if there's no overlay on this page.
-	if ( ! $smart_overlay_config->current_id ) return;
+	if ( ! $smart_overlay_config->current_id ) {
+		return;
+	}
 
 	// Load up our CSS - we inline CSS because why shoud plugins waste HTTP connections?
 	echo '<style id="smart-overlay-inline-css">';
-	include_once('smart-overlay.css');
+	include_once( 'smart-overlay.css' );
 	echo '</style>';
 
-	$display_filter = get_post_meta( $smart_overlay_config->current_id, $smart_overlay_config->prefix . 'display_lightbox_on')[0];
-	$max_width      = get_post_meta( $smart_overlay_config->current_id, $smart_overlay_config->prefix . 'max_width')[0];
+	$display_filter = get_post_meta( $smart_overlay_config->current_id, $smart_overlay_config->prefix . 'display_lightbox_on' )[0];
+	$max_width      = get_post_meta( $smart_overlay_config->current_id, $smart_overlay_config->prefix . 'max_width' )[0];
 	$content        = apply_filters( 'the_content', get_post_field( 'post_content', $smart_overlay_config->current_id ) );
 
 	// Output our lightbox content
 	$inner_style = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
-	echo '<div id="smart-overlay-content" style="display: none !important"><div id="smart-overlay-inner" ' . wp_kses( $inner_style, array('style') ) . '>';
+	echo '<div id="smart-overlay-content" style="display: none !important"><div id="smart-overlay-inner" ' . wp_kses( $inner_style, array( 'style' ) ) . '>';
 		echo $content;
 	echo '</div></div>';
 
