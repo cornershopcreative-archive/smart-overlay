@@ -20,7 +20,9 @@ define( 'SMART_OVERLAY_VERSION', '0.6' );
 require_once dirname( __FILE__ ) . '/fields.php';
 
 
-// Register Custom Post Type
+/**
+ * Register Custom Post Type for Overlays
+ */
 function smart_overlay_post_type() {
 
 	$labels = array(
@@ -72,7 +74,9 @@ function smart_overlay_post_type() {
 add_action( 'init', 'smart_overlay_post_type', 0 );
 
 
-// Implement content displayed in custom columns for the post list admin page.
+/**
+ * Implement content displayed in custom columns for the post list admin page.
+ */
 function smart_overlay_custom_columns( $column, $post_id ) {
 
 	switch ( $column ) {
@@ -85,7 +89,7 @@ function smart_overlay_custom_columns( $column, $post_id ) {
 				'all_but_homepage' => __( 'All But Homepage', 'smart_overlay' ),
 				'none'             => __( 'Nowhere (disabled)', 'smart_overlay' ),
 			);
-			esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
+			esc_html( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 			break;
 
 		case 'trigger':
@@ -100,7 +104,7 @@ function smart_overlay_custom_columns( $column, $post_id ) {
 				'minutes'     => __( sprintf( 'After %s minutes spent on site this visit', $amount ), 'smart_overlay' ),
 				'pages'       => __( sprintf( 'Once %s pages have been visited in last 90 days', $amount ), 'smart_overlay' ),
 			);
-			esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
+			esc_html( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 			break;
 
 	}//end switch
@@ -109,7 +113,9 @@ function smart_overlay_custom_columns( $column, $post_id ) {
 add_action( 'manage_smart_overlay_posts_custom_column' , 'smart_overlay_custom_columns', 10, 2 );
 
 
-// Declare columns for the post list admin page.
+/**
+ * Declare columns for the post list admin page.
+ */
 function smart_overlay_add_columns( $columns ) {
 	unset( $columns['date'] );
 	$columns['displayed_on'] = __( 'Displayed On', 'smart_overlay' );
@@ -209,7 +215,7 @@ function smart_overlay_display() {
 				'id'         => sanitize_title_with_dashes( get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'overlay_identifier' )[0] ),
 			);
 
-					$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . json_encode( $config ) . ';</script>';
+			$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . wp_json_encode( $config ) . ';</script>';
 
 			if ( is_front_page() ) {
 				// Only Homepage
@@ -241,8 +247,8 @@ function smart_overlay_display() {
 				}
 			}//end if
 
-	endwhile;
-endif;
+		endwhile;
+	endif;
 
 	wp_reset_postdata();
 	wp_reset_query();
