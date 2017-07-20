@@ -87,29 +87,28 @@ function smart_overlay_custom_fields() {
 
 	$smart_overlay_fields->add_field( array(
 		'name' => __( 'Trigger Amount', 'smart_overlay' ),
-		'desc' => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger, if necessary', 'smart_overlay' ),
+		'desc' => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger, if necessary.', 'smart_overlay' ),
 		'id'   => $prefix . 'trigger_amount',
 		'type' => 'text_small',
 	) );
 
 	$smart_overlay_fields->add_field( array(
 		'name' => __( 'Overlay Identifier', 'smart_overlay' ),
-		'desc' => __( 'Enter a name or number to uniquely identify this overlay. Change this when revising the overlay content so as to reset users\' cookies', 'smart_overlay' ),
+		'desc' => __( 'Enter a name or number to uniquely identify this overlay. Change this when revising the overlay content so as to reset users\' cookies.', 'smart_overlay' ),
 		'id'   => $prefix . 'overlay_identifier',
 		'type' => 'text_small',
 	) );
 
 	$smart_overlay_fields->add_field( array(
-		'name'         => __( 'Max Width', 'smart_overlay' ),
-		'desc'         => __( 'Maximum width of the lightbox when displayed on the front end (in pixels)', 'smart_overlay' ),
-		'id'           => $prefix . 'max_width',
-		'type'         => 'text_small',
-		'after_field'  => 'px',
+		'name' => __( 'Max Width', 'smart_overlay' ),
+		'desc' => __( 'Maximum width (in pixels) of the lightbox when displayed to users.', 'smart_overlay' ),
+		'id'   => $prefix . 'max_width',
+		'type' => 'text_small',
 	) );
 
 	$smart_overlay_fields->add_field( array(
 		'name' => 'Disable On Mobile',
-		'desc' => 'Check this box to disable overlay on mobile devices',
+		'desc' => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
 		'id'   => $prefix . 'disable_on_mobile',
 		'type' => 'checkbox',
 	) );
