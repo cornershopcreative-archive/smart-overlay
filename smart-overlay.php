@@ -186,7 +186,6 @@ add_action( 'init', 'set_smart_overlay_variables' );
 function smart_overlay_js_config() {
 
 	global $smart_overlay_config;
-	var_dump( $smart_overlay_config );
 
 	// Obviously we can only do this if there are some overlay posts defined...
 	if ( $smart_overlay_config->overlays->have_posts() ) :
