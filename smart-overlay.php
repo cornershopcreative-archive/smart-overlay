@@ -197,13 +197,6 @@ function smart_overlay_display() {
 			$display_filter    = get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'display_lightbox_on' )[0];
 			$disable_on_mobile = get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'disable_on_mobile', 1 );
 
-			$home_page_overlay = false;
-
-			// Set a special flag for overlays set to just the homepage when we're on the homepage, so they overrule any overlays set to 'all'
-			if ( 'home' === $display_filter && is_front_page() ) {
-				$home_page_overlay_found = true;
-			}
-
 			// Prepare our config object
 			$config = array(
 				'background' => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'bg_image' )[0],
@@ -217,33 +210,20 @@ function smart_overlay_display() {
 
 			$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . wp_json_encode( $config ) . ';</script>';
 
-			if ( is_front_page() ) {
-				// Only Homepage
-				if ( 'home' === $display_filter || ( 'all' === $display_filter  && ! $home_page_overlay_found ) ) {
+			if (
+				'all' === $display_filter
+				|| ( is_front_page() && 'home' === $display_filter )
+				|| ( ! is_front_page() && 'all_but_homepage' === $display_filter )
+			)	{
 
-					if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
+				if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
 
-						echo $script_tag;
+					echo $script_tag;
 
-						$smart_overlay_config->current_id = $smart_overlay_id;
+					$smart_overlay_config->current_id = $smart_overlay_id;
 
-						break;
-						// Once we get a single smart overlay, we can stop.
-					}
-				}
-			} else {
-				// Not Homepage
-				if ( 'all_but_homepage' === $display_filter || 'all' === $display_filter ) {
-
-					if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
-
-						echo $script_tag;
-
-						$smart_overlay_config->current_id = $smart_overlay_id;
-
-						break;
-
-					}
+					// Once we get a single smart overlay, we can stop.
+					break;
 				}
 			}//end if
 
