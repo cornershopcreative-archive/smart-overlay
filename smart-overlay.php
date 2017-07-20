@@ -79,21 +79,23 @@ add_action( 'init', 'smart_overlay_post_type', 0 );
  */
 function smart_overlay_custom_columns( $column, $post_id ) {
 
+	global $smart_overlay_config;
+
 	switch ( $column ) {
 
 		case 'displayed_on':
-			$field = 'smart_overlay_display_lightbox_on';
+			$field = $smart_overlay_config->prefix . 'display_lightbox_on';
 			$display_options = array(
 				'home'             => __( 'Homepage', 'smart_overlay' ),
 				'all'              => __( 'All Pages', 'smart_overlay' ),
 				'all_but_homepage' => __( 'All But Homepage', 'smart_overlay' ),
 				'none'             => __( 'Nowhere (disabled)', 'smart_overlay' ),
 			);
-			esc_html( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
+			esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 			break;
 
 		case 'trigger':
-			$field = 'smart_overlay_trigger';
+			$field = $smart_overlay_config->prefix . 'trigger';
 			$amount = get_post_meta( $post_id, 'smart_overlay_trigger_amount', true );
 			$display_options = array(
 				'immediate'   => __( 'Immediately on page load', 'smart_overlay' ),
@@ -104,7 +106,7 @@ function smart_overlay_custom_columns( $column, $post_id ) {
 				'minutes'     => __( sprintf( 'After %s minutes spent on site this visit', $amount ), 'smart_overlay' ),
 				'pages'       => __( sprintf( 'Once %s pages have been visited in last 90 days', $amount ), 'smart_overlay' ),
 			);
-			esc_html( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
+			esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 			break;
 
 	}//end switch
@@ -164,14 +166,14 @@ function set_smart_overlay_variables() {
 		'orderby'        => 'modified',
 		'meta_query'     => array(
 			array(
-				'key'     => $smart_overlay_prefix . 'display_lightbox_on',
+				'key'     => $smart_overlay_config->prefix . 'display_lightbox_on',
 				'value'   => 'none',
 				'compare' => '!=',
 			),
 		),
 	);
 
-	$smart_overlay_config->overlays = new WP_Query( $args );
+	$smart_overlay_config->overlays = new WP_Query( $query_args );
 }
 
 add_action( 'init', 'set_smart_overlay_variables' );
@@ -181,10 +183,10 @@ add_action( 'init', 'set_smart_overlay_variables' );
  * Based on the current page/thing being displayed, and the overlays available, output into the page <head>
  * a JS object with the appropriate overlay settings.
  */
-function smart_overlay_display() {
+function smart_overlay_js_config() {
 
 	global $smart_overlay_config;
-	$home_page_overlay_found = false;
+	var_dump( $smart_overlay_config );
 
 	// Obviously we can only do this if there are some overlay posts defined...
 	if ( $smart_overlay_config->overlays->have_posts() ) :
@@ -233,7 +235,7 @@ function smart_overlay_display() {
 	wp_reset_postdata();
 	wp_reset_query();
 }
-add_action( 'wp_head', 'smart_overlay_display' );
+add_action( 'wp_head', 'smart_overlay_js_config' );
 
 
 /**

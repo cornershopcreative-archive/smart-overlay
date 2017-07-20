@@ -4,7 +4,7 @@
 (function($) {
 
 	$.smartoverlay = function( options ) {
-		options = options || window.coverlay_opts;
+		options = options || window.smart_overlay_opts;
 		var force = window.location.search.indexOf("forceoverlay");
 		var alreadyOpened = false;
 		var settings = $.extend({
