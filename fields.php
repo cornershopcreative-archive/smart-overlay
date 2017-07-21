@@ -97,22 +97,34 @@ function smart_overlay_custom_fields() {
 	) );
 
 	$smart_overlay_fields->add_field( array(
-		'name' => __( 'Trigger Amount', 'smart_overlay' ),
-		'desc' => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger.', 'smart_overlay' ),
-		'id'   => $prefix . 'trigger_amount',
-		'type' => 'text_small',
-		'attributes' => array(
-			'required' => true,
-			'data-conditional-id' => $prefix . 'trigger',
-			'data-conditional-value' => wp_json_encode( array( 'delay', 'scroll', 'minutes', 'pages' ) )
+		'name'            => __( 'Trigger Amount', 'smart_overlay' ),
+		'desc'            => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger.', 'smart_overlay' ),
+		'id'              => $prefix . 'trigger_amount',
+		'type'            => 'text_small',
+		'sanitization_cb' => 'abs',
+		'escape_cb'       => 'abs',
+		'attributes'      => array(
+			'required'               => true,
+			'data-conditional-id'    => $prefix . 'trigger',
+			'data-conditional-value' => wp_json_encode( array( 'delay', 'scroll', 'minutes', 'pages' ) ),
+			'type'                   => 'number', // we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
+			'pattern'                => '\d*',
+			'min'                    => '0'
 		)
 	) );
 
 	$smart_overlay_fields->add_field( array(
-		'name' => __( 'Max Width', 'smart_overlay' ),
-		'desc' => __( 'Maximum width (in pixels) of the lightbox when displayed to users.', 'smart_overlay' ),
-		'id'   => $prefix . 'max_width',
-		'type' => 'text_small',
+		'name'            => __( 'Max Width', 'smart_overlay' ),
+		'desc'            => __( 'Maximum width (in pixels) of the lightbox when displayed to users.', 'smart_overlay' ),
+		'id'              => $prefix . 'max_width',
+		'type'            => 'text_small',
+		'sanitization_cb' => 'absint',
+		'escape_cb'       => 'absint',
+		'attributes'      => array(
+			'type'    => 'number', // we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
+			'pattern' => '\d*',
+			'min'     => '0'
+		)
 	) );
 
 	$smart_overlay_fields->add_field( array(
