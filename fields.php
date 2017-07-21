@@ -6,6 +6,10 @@ if ( file_exists( dirname( __FILE__ ) . '/cmb2/init.php' ) ) {
 	require_once dirname( __FILE__ ) . '/CMB2/init.php';
 }
 
+if ( file_exists( dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php' ) ) {
+	require_once dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
+}
+
 add_action( 'cmb2_admin_init', 'smart_overlay_custom_fields' );
 
 /**
@@ -71,7 +75,7 @@ function smart_overlay_custom_fields() {
 
 	$smart_overlay_fields->add_field( array(
 		'name'    => __( 'Trigger', 'smart_overlay' ),
-		'desc'    => __( 'When does the lightbox appear', 'smart_overlay' ),
+		'desc'    => __( 'When does the lightbox appear?', 'smart_overlay' ),
 		'id'      => $prefix . 'trigger',
 		'type'    => 'select',
 		'options' => array(
@@ -79,7 +83,7 @@ function smart_overlay_custom_fields() {
 			'delay'       => __( 'N seconds after load (specify)', 'smart_overlay' ),
 			'scroll'      => __( 'After page is scrolled N pixels (specify)', 'smart_overlay' ),
 			'scroll-half' => __( 'After page is scrolled halfway', 'smart_overlay' ),
-			'scroll-full' => __( 'At bottom of page', 'smart_overlay' ),
+			'scroll-full' => __( 'After page is scrolled to bottom', 'smart_overlay' ),
 			'minutes'     => __( 'After N minutes spent on site this visit (specify)', 'smart_overlay' ),
 			'pages'       => __( 'Once N pages have been visited in last 90 days (specify)', 'cmb2' )
 		)
@@ -87,9 +91,14 @@ function smart_overlay_custom_fields() {
 
 	$smart_overlay_fields->add_field( array(
 		'name' => __( 'Trigger Amount', 'smart_overlay' ),
-		'desc' => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger, if necessary.', 'smart_overlay' ),
+		'desc' => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger.', 'smart_overlay' ),
 		'id'   => $prefix . 'trigger_amount',
 		'type' => 'text_small',
+		'attributes' => array(
+			'required' => true,
+			'data-conditional-id' => $prefix . 'trigger',
+			'data-conditional-value' => wp_json_encode( array( 'delay', 'scroll', 'minutes', 'pages' ) )
+		)
 	) );
 
 	$smart_overlay_fields->add_field( array(
