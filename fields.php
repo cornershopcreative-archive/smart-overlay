@@ -28,6 +28,13 @@ function smart_overlay_custom_fields() {
 	) );
 
 	$smart_overlay_fields->add_field( array(
+		'name' => __( 'Overlay Identifier', 'smart_overlay' ),
+		'desc' => __( 'Enter a name or number to uniquely identify this overlay. Change this when revising the overlay content so as to reset users\' cookies.', 'smart_overlay' ),
+		'id'   => $prefix . 'overlay_identifier',
+		'type' => 'text_small',
+	) );
+
+	$smart_overlay_fields->add_field( array(
 		'name'    => 'Background Image',
 		'desc'    => 'Upload / Choose an image to be used for overlay background',
 		'id'      => $prefix . 'bg_image',
@@ -99,13 +106,6 @@ function smart_overlay_custom_fields() {
 			'data-conditional-id' => $prefix . 'trigger',
 			'data-conditional-value' => wp_json_encode( array( 'delay', 'scroll', 'minutes', 'pages' ) )
 		)
-	) );
-
-	$smart_overlay_fields->add_field( array(
-		'name' => __( 'Overlay Identifier', 'smart_overlay' ),
-		'desc' => __( 'Enter a name or number to uniquely identify this overlay. Change this when revising the overlay content so as to reset users\' cookies.', 'smart_overlay' ),
-		'id'   => $prefix . 'overlay_identifier',
-		'type' => 'text_small',
 	) );
 
 	$smart_overlay_fields->add_field( array(
