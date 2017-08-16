@@ -15,19 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SMART_OVERLAY_VERSION', '0.6' );
 
-/**
-* Only load Smart Overlay features on approprate admin pages
-*
-* Can't use the admin_init or current_screen hooks. They load the CMB2 embedded plugin too late.
-* is_admin() and post_type query var checks are passable fallback.
-*/
-if( is_admin() && isset($_GET['post_type']) && 'smart_overlay' == $_GET['post_type'] ) {
-	// Include CMB2 for custom metaboxes
-	require_once dirname( __FILE__ ) . '/fields.php';
-	// Support custom columns
-	add_filter( 'manage_smart_overlay_posts_columns' , 'smart_overlay_add_columns' );
-	add_action( 'manage_smart_overlay_posts_custom_column' , 'smart_overlay_custom_columns', 10, 2 );
-}
+
+// include CMB2 for custom metaboxes
+require_once dirname( __FILE__ ) . '/fields.php';
+
 
 /**
  * Register Custom Post Type for Overlays
@@ -121,6 +112,7 @@ function smart_overlay_custom_columns( $column, $post_id ) {
 	}//end switch
 
 }
+add_action( 'manage_smart_overlay_posts_custom_column' , 'smart_overlay_custom_columns', 10, 2 );
 
 
 /**
@@ -133,6 +125,7 @@ function smart_overlay_add_columns( $columns ) {
 	$columns['date'] = __( 'Date', 'smart_overlay' );
 	return $columns;
 }
+add_filter( 'manage_smart_overlay_posts_columns' , 'smart_overlay_add_columns' );
 
 
 /**
@@ -140,6 +133,7 @@ function smart_overlay_add_columns( $columns ) {
  * We don't inline our JS because we need jQuery dependency
  */
 function smart_overlay_js() {
+
 	if ( ! is_admin() ) {
 		wp_enqueue_script(
 			'smart-overlay-js',
