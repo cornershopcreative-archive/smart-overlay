@@ -10,7 +10,6 @@ if ( file_exists( dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.ph
 	require_once dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
 }
 
-add_action( 'cmb2_admin_init', 'smart_overlay_custom_fields' );
 
 /**
  * Define the custom fields for each Smart Overlay post.
@@ -101,8 +100,8 @@ function smart_overlay_custom_fields() {
 		'desc'            => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger.', 'smart_overlay' ),
 		'id'              => $prefix . 'trigger_amount',
 		'type'            => 'text_small',
-		'sanitization_cb' => 'abs',
-		'escape_cb'       => 'abs',
+		'sanitization_cb' => 'smart_overlay_abs',
+		'escape_cb'       => 'smart_overlay_abs',
 		'attributes'      => array(
 			'required'               => true,
 			'data-conditional-id'    => $prefix . 'trigger',
@@ -118,8 +117,8 @@ function smart_overlay_custom_fields() {
 		'desc'            => __( 'Maximum width (in pixels) of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
 		'id'              => $prefix . 'max_width',
 		'type'            => 'text_small',
-		'sanitization_cb' => 'absint',
-		'escape_cb'       => 'absint',
+		'sanitization_cb' => 'smart_overlay_absint',
+		'escape_cb'       => 'smart_overlay_absint',
 		'attributes'      => array(
 			'type'    => 'number', // we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
 			'pattern' => '\d*',
@@ -136,7 +135,8 @@ function smart_overlay_custom_fields() {
 	) );
 
 }
-add_action( 'quick_edit_custom_box', 'smart_overlay_quick_edit', 10, 2 );
+add_action( 'cmb2_admin_init', 'smart_overlay_custom_fields' );
+
 
 /**
  * Only return default value if we don't have a post ID (in the 'post' query variable)
@@ -148,3 +148,18 @@ add_action( 'quick_edit_custom_box', 'smart_overlay_quick_edit', 10, 2 );
 function smart_overlay_set_checkbox_default_for_new_post( $default ) {
 	return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' );
 }
+
+
+/**
+ * Wrapper arouna abs() that can take 3 arguments, because of how CMB2 invokes callbacks
+ */
+ function smart_overlay_abs( $value, $args = NULL, $this = NULL ) {
+	 return abs( $value );
+ }
+
+ /**
+ * Wrapper arouna absint() that can take 3 arguments, because of how CMB2 invokes callbacks
+ */
+ function smart_overlay_absint( $value, $args = NULL, $this = NULL ) {
+	 return absint( $value );
+ }
