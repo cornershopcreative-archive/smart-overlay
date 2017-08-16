@@ -29,14 +29,14 @@ function smart_overlay_custom_fields() {
 
 	$smart_overlay_fields->add_field( array(
 		'name' => __( 'Overlay Identifier', 'smart_overlay' ),
-		'desc' => __( 'Enter a name or number to uniquely identify this overlay. Change this when revising the overlay content so as to reset users\' cookies.', 'smart_overlay' ),
+		'desc' => __( 'Enter a name or number to uniquely identify this overlay. Change this when revising the overlay content to reset users’ cookies.', 'smart_overlay' ),
 		'id'   => $prefix . 'overlay_identifier',
 		'type' => 'text_small',
 	) );
 
 	$smart_overlay_fields->add_field( array(
 		'name'    => 'Background Image',
-		'desc'    => 'Upload / Choose an image to be used for overlay background',
+		'desc'    => 'Upload / Choose an image to be used for overlay background. Best size depends on your overlay’s content, but probably at least 300x300px.',
 		'id'      => $prefix . 'bg_image',
 		'type'    => 'file',
 		// Optional:
@@ -115,7 +115,7 @@ function smart_overlay_custom_fields() {
 
 	$smart_overlay_fields->add_field( array(
 		'name'            => __( 'Max Width', 'smart_overlay' ),
-		'desc'            => __( 'Maximum width (in pixels) of the lightbox when displayed to users.', 'smart_overlay' ),
+		'desc'            => __( 'Maximum width (in pixels) of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
 		'id'              => $prefix . 'max_width',
 		'type'            => 'text_small',
 		'sanitization_cb' => 'absint',
@@ -128,11 +128,23 @@ function smart_overlay_custom_fields() {
 	) );
 
 	$smart_overlay_fields->add_field( array(
-		'name' => 'Disable On Mobile',
-		'desc' => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
-		'id'   => $prefix . 'disable_on_mobile',
-		'type' => 'checkbox',
+		'name'    => 'Disable On Mobile',
+		'desc'    => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
+		'id'      => $prefix . 'disable_on_mobile',
+		'type'    => 'checkbox',
+		'default' => smart_overlay_set_checkbox_default_for_new_post( true ),
 	) );
 
 }
 add_action( 'quick_edit_custom_box', 'smart_overlay_quick_edit', 10, 2 );
+
+/**
+ * Only return default value if we don't have a post ID (in the 'post' query variable)
+ * From https://github.com/CMB2/CMB2/wiki/Tips-&-Tricks#setting-a-default-value-for-a-checkbox
+ *
+ * @param  bool  $default On/Off (true/false)
+ * @return mixed          Returns true or '', the blank default
+ */
+function smart_overlay_set_checkbox_default_for_new_post( $default ) {
+	return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' );
+}
