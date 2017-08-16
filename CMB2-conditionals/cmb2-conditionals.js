@@ -5,7 +5,7 @@ jQuery( document ).ready( function( $ ) {
 	 * Add 'show' and 'hide' event to JQuery event detection.
 	 * @see http://viralpatel.net/blogs/jquery-trigger-custom-event-show-hide-element/
 	 */
-	$.each( ['show', 'hide'], function( i, ev ) {
+	$('.cmb2-row').each(['show', 'hide'], function (i, ev) { // Hacked by Cornershop, see https://github.com/jcchavezs/cmb2-conditionals/issues/22#issuecomment-229180634
 		var el = $.fn[ev];
 		$.fn[ev] = function() {
 			this.trigger( ev );

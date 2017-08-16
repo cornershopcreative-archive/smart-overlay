@@ -1,11 +1,11 @@
 <?php
 /**
- * CMB2 Conditionals.
+ * CMB2 Conditionals ### HACKED BY CORNERSHOP SEE LINE 8 of cmb2-conditionals.js ###
  *
  * @package     WordPress\Plugins\CMB2 Conditionals
  * @author      José Carlos Chávez <jcchavezs@gmail.com>
  * @link        https://github.com/jcchavezs/cmb2-conditionals
- * @version     1.0.4
+ * @version     1.0.4 ### HACKED BY CORNERSHOP SEE LINE 8 of cmb2-conditionals.js ###
  *
  * @copyright   2015 José Carlos Chávez
  * @license     http://creativecommons.org/licenses/GPL/2.0/ GNU General Public License, version 3 or higher
@@ -18,7 +18,7 @@
  * Author URI:        http://github.com/jcchavezs
  * Github Plugin URI: https://github.com/jcchavezs/cmb2-conditionals
  * Github Branch:     master
- * Version:           1.0.4
+ * Version:           1.0.4 ### HACKED BY CORNERSHOP SEE LINE 8 of cmb2-conditionals.js ###
  * License:           GPL v3
  *
  * Copyright (C) 2015, José Carlos Chávez - jcchavezs@gmail.com
