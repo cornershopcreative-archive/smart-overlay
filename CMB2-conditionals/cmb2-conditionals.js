@@ -177,7 +177,7 @@ jQuery( document ).ready( function( $ ) {
 			}
 		});
 		for ( loopI = 0; loopI < uniqueFormElms.length; loopI++ ) {
-			formElms = $( '[name="' + uniqueFormElms[loopI] + '"]' );
+			formElms = $( '[name="' + uniqueFormElms[loopI] + '"]', conditionContext );
 			if ( 1 === formElms.length || ! formElms.is( ':checked' ) ) {
 				formElms.trigger( 'change' );
 			} else {
