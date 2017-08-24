@@ -277,11 +277,11 @@ function smart_overlay_admin_notices() {
 	$current_screen = get_current_screen();
 
 	if ( 'edit-smart_overlay' == $current_screen->id && $overlay_count->publish > 1 ) :
-  ?>
+ ?>
   <div class="notice notice-warning notice-alt">
 		<p><?php _e( 'Note: If more than one overlay is eligible to appear on a given page, only the most recent will be shown to visitors.', 'smart_overlay' ); ?></p>
   </div>
-  <?php
+<?php
 	endif;
 }
 add_action( 'admin_notices', 'smart_overlay_admin_notices' );
