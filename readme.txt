@@ -12,9 +12,10 @@ Looking for a new way to entice your site visitors? Smart Overlay is the lightbo
 == Description ==
 
 Smart Overlay is a plugin for implementing whatever you want to call them — modals, lightboxes, overlays or popups — on your site. While it offers fine-tuned control over where and when the lightboxes display, it was developed with the goal of being simple and lightweight: Smart Overlay won’t cause your site to take a big performance hit by loading lots of complicated and extraneous CSS and JavaScript.
+
 Smart Overlay lets you use the standard WordPress post editor to build and configure your overlays. In addition to full WYSIWYG editing of overlay content, Smart Overlay gives you powerful control over what triggers the appearance of your lightbox. Triggers can be set so popups show:
 
-* Immediate on page load
+* Immediately on page load
 * After a configurable number of seconds
 * After the page is scrolled a configurable number of pixels
 * After the page is scrolled halfway, or to the bottom
@@ -32,7 +33,7 @@ In addition to those sophisticated trigger controls, you also get options on eac
 
 *Note: This plugin uses cookies, so if you’re bound by EU or other regulations requiring you notify users of such, be sure to do so if you’ve got Smart Overlay enabled.*
 
-**Interested in other plugins from Cornershop Creative? We've made these things.**
+**Interested in other plugins from Cornershop Creative? We've made [these things](https://cornershopcreative.com/products).**
 
 == Installation ==
 
@@ -57,7 +58,7 @@ Of course, you’re free to use the WYSIWYG and graft on your own custom CSS to 
 
 = How can I contribute? =
 
-The git repository should be publicly available at https://bitbucket.org/cornershopcreative/smart-overlay. Feel free to fork, edit, make pull requests, etc.
+The git repository should be publicly available at [on Bitbucket](https://bitbucket.org/cornershopcreative/smart-overlay). Feel free to fork, edit, make pull requests, etc.
 
 == Changelog ==
 
