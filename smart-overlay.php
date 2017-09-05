@@ -3,7 +3,7 @@
 Plugin Name: Smart Overlay
 Plugin URI: http://cornershopcreative.com/code/smart-overlay
 Description: Show a highly-configurable lightbox overlay on your pages to encourage donations, actions. etc.
-Version: 0.6.2
+Version: 0.7
 Author: Cornershop Creative
 Author URI: http://cornershopcreative.com
 License: GPLv2 or later
@@ -13,7 +13,7 @@ Text Domain: smart-overlay
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' ); }
 
-define( 'SMART_OVERLAY_VERSION', '0.6.2' );
+define( 'SMART_OVERLAY_VERSION', '0.7' );
 
 
 // include CMB2 for custom metaboxes
