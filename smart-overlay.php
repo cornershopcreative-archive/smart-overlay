@@ -3,7 +3,7 @@
 Plugin Name: Smart Overlay
 Plugin URI: http://cornershopcreative.com/code/smart-overlay
 Description: Show a highly-configurable lightbox overlay on your pages to encourage donations, actions. etc.
-Version: 0.6
+Version: 0.6.2
 Author: Cornershop Creative
 Author URI: http://cornershopcreative.com
 License: GPLv2 or later
@@ -13,7 +13,7 @@ Text Domain: smart-overlay
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Direct access not allowed' ); }
 
-define( 'SMART_OVERLAY_VERSION', '0.6' );
+define( 'SMART_OVERLAY_VERSION', '0.6.2' );
 
 
 // include CMB2 for custom metaboxes
@@ -205,8 +205,9 @@ function smart_overlay_js_config() {
 				'suppress'   => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'suppress' )[0],
 				'trigger'    => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'trigger' )[0],
 				'amount'     => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'trigger_amount' )[0],
-				'max_width'  => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'max_width' )[0],
+				'maxWidth'   => get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'max_width' )[0],
 				'id'         => sanitize_title_with_dashes( get_post_meta( $smart_overlay_id, $smart_overlay_config->prefix . 'overlay_identifier' )[0] ),
+				'onMobile'   => ! $disable_on_mobile,
 			);
 
 			$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . wp_json_encode( $config ) . ';</script>';
@@ -217,15 +218,13 @@ function smart_overlay_js_config() {
 				|| ( ! is_front_page() && 'all_but_homepage' === $display_filter )
 			)	{
 
-				if ( ! $disable_on_mobile || ( $disable_on_mobile && ! wp_is_mobile() ) ) {
+				echo $script_tag;
 
-					echo $script_tag;
+				$smart_overlay_config->current_id = $smart_overlay_id;
 
-					$smart_overlay_config->current_id = $smart_overlay_id;
+				// Once we get a single smart overlay, we can stop.
+				break;
 
-					// Once we get a single smart overlay, we can stop.
-					break;
-				}
 			}//end if
 
 		endwhile;

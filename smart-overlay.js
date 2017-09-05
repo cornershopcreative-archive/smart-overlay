@@ -14,12 +14,16 @@
 			trigger : 'immediate',
 			amount  : 1,
 			width   : 600,
-			id      : 'smart-overlay'
+			id      : 'smart-overlay',
+			onMobile: false
 		}, options );
 
 		// @todo refactor all code to still increment timers, etc even when not on pages that lightbox will be displayed on...
 		// do nothing if it's disabled...
 		if ( 'none' === settings.context ) return;
+
+		// ...if we're on mobile it's not...
+		if ( isMobile() && ! settings.onMobile ) return;
 
 		// ...if it's supposed to be on the homepage and we're not...
 		if ( 'home' === settings.context && !$('body').hasClass('home') ) return;
@@ -119,6 +123,12 @@
 			} else {
 				$.cookie('smart-overlay-minutes-' + settings.id, timePassed, { path: '/'});
 			}
+		}
+
+		// Primitive mobile test loosely based on wp_is_mobile()
+		function isMobile() {
+			testExp = new RegExp('Android|webOS|iPhone|iPad|BlackBerry|Windows Phone|Opera Mini|IEMobile|Mobile|Silk|Kindle|Opera Mobi' , 'i');
+			return testExp.test( navigator.userAgent );
 		}
 
 	};
