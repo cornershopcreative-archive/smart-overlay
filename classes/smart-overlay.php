@@ -259,7 +259,7 @@ class Smart_Overlay{
 
 
 	/**
-	 * Ouput the actual overlays contents chosen for this page into the footer.
+	 * Output the actual overlays contents chosen for this page into the footer.
 	 */
 	public function smart_overlay_footer() {
 
@@ -270,7 +270,7 @@ class Smart_Overlay{
 			return;
 		}
 
-		// Load up our CSS - we inline CSS because why shoud plugins waste HTTP connections?
+		// Load up our CSS - we inline CSS because why should plugins waste HTTP connections?
 		echo '<style id="smart-overlay-inline-css">';
 		require_once dirname( __FILE__ ) . '/../assets/smart-overlay.css';
 		echo '</style>';

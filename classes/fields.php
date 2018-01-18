@@ -151,14 +151,14 @@ class CMB2_fields{
 
 
 	/**
-	 * Wrapper arouna abs() that can take 3 arguments, because of how CMB2 invokes callbacks
+	 * Wrapper around abs() that can take 3 arguments, because of how CMB2 invokes callbacks
 	 */
 	public function smart_overlay_abs( $value ) {
 		return abs( $value );
 	}
 
 	/**
-	 * Wrapper arouna absint() that can take 3 arguments, because of how CMB2 invokes callbacks
+	 * Wrapper around absint() that can take 3 arguments, because of how CMB2 invokes callbacks
 	 */
 	public function smart_overlay_absint( $value ) {
 		return absint( $value );
