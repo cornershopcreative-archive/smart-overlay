@@ -1,23 +1,54 @@
 <?php
+/*
+ * Configures the meta fields for the overlay options
+ */
 
 if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not allowed' );
 }
 
 class CMB2_fields{
-	public $smart_overlay_fields;
-	public $post_type = array('smart_overlay');
-	public $prefix = 'smart_overlay_';
+	/*
+	 * Holds the CMB2 fields
+	 */
+	private $smart_overlay_fields;
 
-	public function on_loaded(){
+
+
+	/*
+	 * String used for CMB2
+	 */
+	private $post_type;
+
+
+
+	/*
+	 * String used for CMB2
+	 */
+	private $prefix;
+
+
+
+	public function __construct() {
+		$this->post_type = array('smart_overlay');
+		$this->prefix = 'smart_overlay_';
+	}
+
+
+
+	/*
+	 * Initialize hooks
+	 */
+	public function init(){
 		add_action( 'cmb2_admin_init', array( $this, 'smart_overlay_custom_fields' ) );
 	}
+
+
+
 	/**
 	 * Define the custom fields for each Smart Overlay post.
 	 */
 	public function smart_overlay_custom_fields() {
-
-
 		$this->smart_overlay_fields = new_cmb2_box( array(
 			'id'            => $this->prefix . 'options',
 			'title'         => __( 'Smart Overlay Options', 'smart_overlay' ),
@@ -150,12 +181,15 @@ class CMB2_fields{
 	}
 
 
+
 	/**
 	 * Wrapper around abs() that can take 3 arguments, because of how CMB2 invokes callbacks
 	 */
 	public function smart_overlay_abs( $value ) {
 		return abs( $value );
 	}
+
+
 
 	/**
 	 * Wrapper around absint() that can take 3 arguments, because of how CMB2 invokes callbacks

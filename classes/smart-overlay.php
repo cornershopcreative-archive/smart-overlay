@@ -1,5 +1,7 @@
 <?php
-//namespace smartoverlay;
+/*
+ * Create the custom post type, load dependencies and add hooks
+ */
 
 if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not allowed' );
@@ -7,14 +9,21 @@ if ( ! defined( 'WPINC' ) ) {
 
 class Smart_Overlay{
 
+	/*
+	 * Holds standard class
+	 */
 	private $smart_overlay_config;
 
 	public function __construct() {
+		$this->smart_overlay_config = new stdClass();
 		$this->set_smart_overlay_variables();
 		$this->dependencies();
 	}
 
-	public function on_loaded(){
+	/*
+	 * Do all the hooks
+	 */
+	public function init(){
 		add_action( 'init', array( $this, 'smart_overlay_post_type' ), 10 );
 		add_action( 'manage_smart_overlay_posts_custom_column' , array( $this, 'smart_overlay_custom_columns' ), 10, 2 );
 		add_filter( 'manage_smart_overlay_posts_columns' , array( $this, 'smart_overlay_add_columns' ) );
@@ -25,9 +34,13 @@ class Smart_Overlay{
 		add_action( 'admin_notices', array( $this, 'smart_overlay_admin_notices' ) );
 	}
 
-	//load dependencies
-	public function dependencies(){
 
+
+	/*
+	 * Load dependencies
+	 */
+	public function dependencies(){
+		//Load CMB2 Library
 		if ( file_exists( dirname( __FILE__ ) . '/cmb2/init.php' ) ) {
 			require_once dirname( __FILE__ ) . '/cmb2/init.php';
 		} elseif ( file_exists( dirname( __FILE__ ) . '/CMB2/init.php' ) ) {
@@ -38,15 +51,15 @@ class Smart_Overlay{
 			require_once dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
 		}
 
-		// include CMB2 for custom metaboxes
+		//Include CMB2 configuration
 		require_once dirname( __FILE__ ) . '/fields.php';
 
-
-		//LEFT OFF HERE
-
+		//Initialize CMB2 configuration
 		$fields = new CMB2_fields();
-		$fields->on_loaded();
+		$fields->init();
 	}
+
+
 
 	/**
 	 * Register Custom Post Type for Overlays
@@ -105,8 +118,6 @@ class Smart_Overlay{
 	 */
 	public function smart_overlay_custom_columns( $column, $post_id ) {
 
-		$this->smart_overlay_config;
-
 		switch ( $column ) {
 
 			case 'displayed_on':
@@ -163,7 +174,7 @@ class Smart_Overlay{
 		if ( ! is_admin() ) {
 			wp_enqueue_script(
 				'smart-overlay-js',
-				plugins_url( '/../assets/smart-overlay.js', __FILE__ ),
+				plugins_url( '/assets/smart-overlay.js', dirname(__FILE__) ),
 				array( 'jquery' ),
 				SMART_OVERLAY_VERSION,
 				true
@@ -178,8 +189,6 @@ class Smart_Overlay{
 	 * Built the config object.
 	 */
 	public function set_smart_overlay_variables() {
-
-		$this->smart_overlay_config = new stdClass();
 		$this->smart_overlay_config->current_id = '';
 		$this->smart_overlay_config->prefix = apply_filters( 'smart_overlay_prefix', 'smart_overlay_' );
 
@@ -197,9 +206,8 @@ class Smart_Overlay{
 			),
 		);
 
-		return $this->smart_overlay_config->overlays = new WP_Query( $query_args );
+		$this->smart_overlay_config->overlays = new WP_Query( $query_args );
 	}
-
 
 
 
@@ -262,29 +270,19 @@ class Smart_Overlay{
 	 * Output the actual overlays contents chosen for this page into the footer.
 	 */
 	public function smart_overlay_footer() {
-
-		$this->smart_overlay_config;
-
-		// Don't do anything if there's no overlay on this page.
+		//Don't do anything if there's no overlay on this page.
 		if ( ! $this->smart_overlay_config->current_id ) {
 			return;
 		}
 
-		// Load up our CSS - we inline CSS because why should plugins waste HTTP connections?
-		echo '<style id="smart-overlay-inline-css">';
-		require_once dirname( __FILE__ ) . '/../assets/smart-overlay.css';
-		echo '</style>';
-
+		//Variables for the modal template
 		$display_filter = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
 		$max_width      = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'max_width' )[0];
 		$content        = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
+		$inner_style 	= ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
 
-		// Output our lightbox content
-		$inner_style = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
-		echo '<div id="smart-overlay-content" style="display: none !important"><div id="smart-overlay-inner" ' . wp_kses( $inner_style, array( 'style' ) ) . '>';
-		echo $content;
-		echo '</div></div>';
-
+		//Load the modal markup
+		require_once dirname( __FILE__ ) . '/../templates/modal.php';
 	}
 
 
