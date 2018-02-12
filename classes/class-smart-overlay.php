@@ -17,7 +17,7 @@ class Smart_Overlay{
 	public function __construct() {
 		$this->smart_overlay_config = new stdClass();
 		$this->set_smart_overlay_variables();
-		$this->dependencies();
+		$this->load_dependencies();
 	}
 
 	/*
@@ -39,7 +39,7 @@ class Smart_Overlay{
 	/*
 	 * Load dependencies
 	 */
-	public function dependencies(){
+	private function load_dependencies(){
 		//Load CMB2 Library
 		if ( file_exists( dirname( __FILE__ ) . '/cmb2/init.php' ) ) {
 			require_once dirname( __FILE__ ) . '/cmb2/init.php';
@@ -52,10 +52,10 @@ class Smart_Overlay{
 		}
 
 		//Include CMB2 configuration
-		require_once dirname( __FILE__ ) . '/fields.php';
+		require_once dirname( __FILE__ ) . '/class-smart-overlay-admin-fields.php';
 
 		//Initialize CMB2 configuration
-		$fields = new CMB2_fields();
+		$fields = new Smart_Overlay_Admin_Fields();
 		$fields->init();
 	}
 

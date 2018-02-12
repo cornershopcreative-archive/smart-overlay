@@ -7,7 +7,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not allowed' );
 }
 
-class CMB2_fields{
+class Smart_Overlay_Admin_Fields{
 	/*
 	 * Holds the CMB2 fields
 	 */

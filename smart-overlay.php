@@ -20,7 +20,7 @@ define( 'SMART_OVERLAY_VERSION', '0.7' );
 
 
 
-require_once dirname( __FILE__ ) . '/classes/smart-overlay.php';
+require_once dirname( __FILE__ ) . '/classes/class-smart-overlay.php';
 
 
 
