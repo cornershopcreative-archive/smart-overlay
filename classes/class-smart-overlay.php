@@ -1,16 +1,22 @@
 <?php
-/*
+/**
  * Create the custom post type, load dependencies and add hooks
+ * PHP Version 5
+ *
+ * @since   0.5.5
+ * @package Smart_Overlay
+ * @author  Cornershop Creative <devs@cshp.co>
  */
 
 if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not allowed' );
 }
 
-class Smart_Overlay{
+class Smart_Overlay {
 
-	/*
-	 * Holds standard class
+
+	/**
+	 * @var Holds standard class
 	 */
 	private $smart_overlay_config;
 
@@ -20,13 +26,13 @@ class Smart_Overlay{
 		$this->load_dependencies();
 	}
 
-	/*
+	/**
 	 * Do all the hooks
 	 */
-	public function init(){
+	public function init() {
 		add_action( 'init', array( $this, 'smart_overlay_post_type' ), 10 );
-		add_action( 'manage_smart_overlay_posts_custom_column' , array( $this, 'smart_overlay_custom_columns' ), 10, 2 );
-		add_filter( 'manage_smart_overlay_posts_columns' , array( $this, 'smart_overlay_add_columns' ) );
+		add_action( 'manage_smart_overlay_posts_custom_column', array( $this, 'smart_overlay_custom_columns' ), 10, 2 );
+		add_filter( 'manage_smart_overlay_posts_columns', array( $this, 'smart_overlay_add_columns' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_js' ) );
 		add_action( 'init', array( $this, 'set_smart_overlay_variables' ) );
 		add_action( 'wp_head', array( $this, 'smart_overlay_js_config' ) );
@@ -36,25 +42,25 @@ class Smart_Overlay{
 
 
 
-	/*
+	/**
 	 * Load dependencies
 	 */
-	private function load_dependencies(){
-		//Load CMB2 Library
+	private function load_dependencies() {
+		// Load CMB2 Library
 		if ( file_exists( dirname( __FILE__ ) . '/cmb2/init.php' ) ) {
-			require_once dirname( __FILE__ ) . '/cmb2/init.php';
+			include_once dirname( __FILE__ ) . '/cmb2/init.php';
 		} elseif ( file_exists( dirname( __FILE__ ) . '/CMB2/init.php' ) ) {
-			require_once dirname( __FILE__ ) . '/CMB2/init.php';
+			include_once dirname( __FILE__ ) . '/CMB2/init.php';
 		}
 
 		if ( file_exists( dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php' ) ) {
-			require_once dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
+			include_once dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
 		}
 
-		//Include CMB2 configuration
-		require_once dirname( __FILE__ ) . '/class-smart-overlay-admin-fields.php';
+		// Include CMB2 configuration
+		include_once dirname( __FILE__ ) . '/class-smart-overlay-admin-fields.php';
 
-		//Initialize CMB2 configuration
+		// Initialize CMB2 configuration
 		$fields = new Smart_Overlay_Admin_Fields();
 		$fields->init();
 	}
@@ -154,6 +160,9 @@ class Smart_Overlay{
 
 	/**
 	 * Declare columns for the post list admin page.
+	 *
+	 * @param array $columns admin columns.
+	 * @return array
 	 */
 	public function smart_overlay_add_columns( $columns ) {
 		unset( $columns['date'] );
@@ -174,7 +183,7 @@ class Smart_Overlay{
 		if ( ! is_admin() ) {
 			wp_enqueue_script(
 				'smart-overlay-js',
-				plugins_url( '/assets/smart-overlay.js', dirname(__FILE__) ),
+				plugins_url( '/assets/smart-overlay.js', dirname( __FILE__ ) ),
 				array( 'jquery' ),
 				SMART_OVERLAY_VERSION,
 				true
@@ -242,13 +251,18 @@ class Smart_Overlay{
 
 				$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . wp_json_encode( $config ) . ';</script>';
 
-				if (
-					'all' === $display_filter
+				if ( 'all' === $display_filter
 					|| ( is_front_page() && 'home' === $display_filter )
 					|| ( ! is_front_page() && 'all_but_homepage' === $display_filter )
-				)	{
+				) {
 
-					echo $script_tag;
+					echo wp_kses(
+						$script_tag, [
+							'script' => [
+								'id' => [],
+							],
+						]
+					);
 
 					$this->smart_overlay_config->current_id = $smart_overlay_id;
 
@@ -270,19 +284,19 @@ class Smart_Overlay{
 	 * Output the actual overlays contents chosen for this page into the footer.
 	 */
 	public function smart_overlay_footer() {
-		//Don't do anything if there's no overlay on this page.
+		// Don't do anything if there's no overlay on this page.
 		if ( ! $this->smart_overlay_config->current_id ) {
 			return;
 		}
 
-		//Variables for the modal template
+		// Variables for the modal template
 		$display_filter = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
 		$max_width      = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'max_width' )[0];
 		$content        = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
-		$inner_style 	= ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
+		$inner_style     = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
 
-		//Load the modal markup
-		require_once dirname( __FILE__ ) . '/../templates/modal.php';
+		// Load the modal markup
+		include_once dirname( __FILE__ ) . '/../templates/modal.php';
 	}
 
 
@@ -295,23 +309,12 @@ class Smart_Overlay{
 		$overlay_count = wp_count_posts( 'smart_overlay' );
 		$current_screen = get_current_screen();
 
-		if ( 'edit-smart_overlay' == $current_screen->id && $overlay_count->publish > 1 ) :
+		if ( 'edit-smart_overlay' === $current_screen->id && $overlay_count->publish > 1 ) :
 			?>
-			<div class="notice notice-warning notice-alt">
-				<p><?php _e( 'Note: If more than one overlay is eligible to appear on a given page, only the most recent will be shown to visitors.', 'smart_overlay' ); ?></p>
-			</div>
+		 <div class="notice notice-warning notice-alt">
+		  <p><?php esc_html_e( 'Note: If more than one overlay is eligible to appear on a given page, only the most recent will be shown to visitors.', 'smart_overlay' ); ?></p>
+		 </div>
 			<?php
 		endif;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
