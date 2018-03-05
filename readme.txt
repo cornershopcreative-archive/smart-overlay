@@ -62,9 +62,12 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 
 == Changelog ==
 
+= 0.8 =
+* Refactoring entire codebase to be object-oriented in preparation for future features; no other functional changes.
+
 = 0.7 =
-* Refactoring mobile check to occur on front-end rather than with wp_is_mobile() to get around caching issues
-* Updating Featherlight library from 1.2.3 to 1.7.8
+* Refactoring mobile check to occur on front-end rather than with wp_is_mobile() to get around caching issues.
+* Updating Featherlight library from 1.2.3 to 1.7.8.
 
 = 0.6 =
 * Initial public release.

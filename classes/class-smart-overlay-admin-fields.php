@@ -34,7 +34,9 @@ class Smart_Overlay_Admin_Fields {
 	private $prefix;
 
 
-
+	/**
+	 * Sets up some variables on instantiation.
+	 */
 	public function __construct() {
 		$this->post_type = array( 'smart_overlay' );
 		$this->prefix = 'smart_overlay_';
@@ -199,18 +201,16 @@ class Smart_Overlay_Admin_Fields {
 	}
 
 
-
 	/**
 	 * Only return default value if we don't have a post ID (in the 'post' query variable)
 	 * From https://github.com/CMB2/CMB2/wiki/Tips-&-Tricks#setting-a-default-value-for-a-checkbox
 	 *
-	 * @param  bool $default On/Off (true/false)
-	 * @return mixed          Returns true or '', the blank default
+	 * @param  bool $default On/Off (true/false).
+	 * @return mixed          Returns true or '', the blank default.
 	 */
 	public function smart_overlay_set_checkbox_default_for_new_post( $default ) {
 		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' );
 	}
-
 
 
 	/**
@@ -221,7 +221,6 @@ class Smart_Overlay_Admin_Fields {
 	public function smart_overlay_abs( $value ) {
 		return abs( $value );
 	}
-
 
 
 	/**
