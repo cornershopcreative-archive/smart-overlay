@@ -1,5 +1,5 @@
 === Smart Overlay ===
-Contributors: drywallbmb, rxnlabs, dannycorner
+Contributors: drywallbmb, rxnlabs, dannycorner, rpasillas
 Tags: modal window, popup, lightbox
 Requires at least: 4.3
 Tested up to: 4.8.1
