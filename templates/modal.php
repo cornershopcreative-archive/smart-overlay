@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 </style>
 
 <div id="smart-overlay-content" style="display: none !important">
-	<div id="smart-overlay-inner" <?php wp_kses( $inner_style, array( 'style' ) ); ?> >
+	<div id="smart-overlay-inner" <?php echo wp_kses( $inner_style, array( 'style' ) ); ?> >
 		<?php echo $content; ?>
 	</div>
 </div>

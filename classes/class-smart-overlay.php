@@ -295,8 +295,9 @@ class Smart_Overlay {
 		$content        = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
 		$inner_style     = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
 
+
 		// Load the modal markup
-		include_once dirname( __FILE__ ) . '/../templates/modal.php';
+		include_once dirname(__DIR__) . '/templates/modal.php';
 	}
 
 
