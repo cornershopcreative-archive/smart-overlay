@@ -47,14 +47,14 @@ class Smart_Overlay {
 	 */
 	private function load_dependencies() {
 		// Load CMB2 Library
-		if ( file_exists( dirname( __FILE__ ) . '/cmb2/init.php' ) ) {
-			include_once dirname( __FILE__ ) . '/cmb2/init.php';
-		} elseif ( file_exists( dirname( __FILE__ ) . '/CMB2/init.php' ) ) {
-			include_once dirname( __FILE__ ) . '/CMB2/init.php';
+		if ( file_exists( dirname( __DIR__ ) . '/cmb2/init.php' ) ) {
+			include_once dirname( __DIR__ ) . '/cmb2/init.php';
+		} elseif ( file_exists( dirname( __DIR__ ) . '/CMB2/init.php' ) ) {
+			include_once dirname( __DIR__ ) . '/CMB2/init.php';
 		}
 
-		if ( file_exists( dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php' ) ) {
-			include_once dirname( __FILE__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
+		if ( file_exists( dirname( __DIR__ ) . '/CMB2-conditionals/cmb2-conditionals.php' ) ) {
+			include_once dirname( __DIR__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
 		}
 
 		// Include CMB2 configuration
@@ -295,8 +295,9 @@ class Smart_Overlay {
 		$content        = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
 		$inner_style     = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
 
+
 		// Load the modal markup
-		include_once dirname( __FILE__ ) . '/../templates/modal.php';
+		include_once dirname(__DIR__) . '/templates/modal.php';
 	}
 
 
