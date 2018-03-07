@@ -47,14 +47,14 @@ class Smart_Overlay {
 	 */
 	private function load_dependencies() {
 		// Load CMB2 Library
-		if ( file_exists( dirname( __DIR__ ) . '/cmb2/init.php' ) ) {
-			include_once dirname( __DIR__ ) . '/cmb2/init.php';
-		} elseif ( file_exists( dirname( __DIR__ ) . '/CMB2/init.php' ) ) {
-			include_once dirname( __DIR__ ) . '/CMB2/init.php';
+		if ( file_exists( dirname( __DIR__ ) . '/includes/cmb2/init.php' ) ) {
+			include_once dirname( __DIR__ ) . '/includes/cmb2/init.php';
+		} elseif ( file_exists( dirname( __DIR__ ) . '/includes/CMB2/init.php' ) ) {
+			include_once dirname( __DIR__ ) . '/includes/CMB2/init.php';
 		}
 
-		if ( file_exists( dirname( __DIR__ ) . '/CMB2-conditionals/cmb2-conditionals.php' ) ) {
-			include_once dirname( __DIR__ ) . '/CMB2-conditionals/cmb2-conditionals.php';
+		if ( file_exists( dirname( __DIR__ ) . '/includes/CMB2-conditionals/cmb2-conditionals.php' ) ) {
+			include_once dirname( __DIR__ ) . '/includes/CMB2-conditionals/cmb2-conditionals.php';
 		}
 
 		// Include CMB2 configuration
