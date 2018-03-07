@@ -62,6 +62,9 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 
 == Changelog ==
 
+= 0.8.1 =
+* Bugfixes for overlay styling and file inclusion.
+
 = 0.8 =
 * Refactoring entire codebase to be object-oriented in preparation for future features; no other functional changes.
 
