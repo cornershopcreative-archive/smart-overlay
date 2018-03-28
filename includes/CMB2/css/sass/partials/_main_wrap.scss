@@ -524,3 +524,14 @@ span.cmb2-metabox-description {
 		width: 100%;
 	}
 }
+
+.cmb2-wrap .cmb-type-single-dimension-and-unit {
+	input[type="number"] {
+		width: 100%;
+		margin-right: 2px;
+	}
+
+	select {
+		margin-top: 1px;
+	}
+}

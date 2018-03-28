@@ -182,9 +182,26 @@ class Smart_Overlay_Admin_Fields {
 				'attributes'      => array(
 					'type'    => 'number',
 					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
-														'pattern' => '\d*',
+					'pattern' => '\d*',
 					'min'     => '0',
 				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
+				'name'            => __( 'Max Height', 'smart_overlay' ),
+				'desc'            => __( 'Maximum height of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
+				'id'              => $this->prefix . 'max_height',
+				'type'            => 'single_dimension_and_unit',
+				'attributes'      => array(
+					'type'    => 'number',
+					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
+					'pattern' => '\d*',
+					'min'     => '0',
+				),
+//				'sanitization_cb' => 'smart_overlay_absint',
+//				'escape_cb'       => 'smart_overlay_absint',
 			)
 		);
 

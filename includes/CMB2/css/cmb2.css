@@ -662,6 +662,18 @@ span.cmb2-metabox-description {
 	padding-left: 1.5em;
 }
 
+/* line 529, sass/partials/_main_wrap.scss */
+
+.cmb2-wrap .cmb-type-single-dimension-and-unit input[type="number"]{
+	width: 100%;
+}
+
+/* line 534, sass/partials/_main_wrap.scss */
+
+.cmb2-wrap .cmb-type-single-dimension-and-unit select{
+	margin-top: 1px;
+}
+
 /*--------------------------------------------------------------
 Post Metaboxes
 --------------------------------------------------------------*/

@@ -57,8 +57,15 @@ class Smart_Overlay {
 			include_once dirname( __DIR__ ) . '/includes/CMB2-conditionals/cmb2-conditionals.php';
 		}
 
+		// Include CMB2 Custom Fields
+		include_once dirname( __FILE__ ) . '/class-smart-overlay-custom-fields.php';
+
 		// Include CMB2 configuration
 		include_once dirname( __FILE__ ) . '/class-smart-overlay-admin-fields.php';
+
+		// Initialize CMB2 Custom FIelds
+		$fields = new Smart_Overlay_Custom_Fields();
+		$fields->init();
 
 		// Initialize CMB2 configuration
 		$fields = new Smart_Overlay_Admin_Fields();
