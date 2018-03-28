@@ -20,6 +20,22 @@ class Smart_Overlay {
 	 */
 	private $smart_overlay_config;
 
+	/**
+	 * @var Holds the inline styles for the modal window
+	 */
+	private $modal_inner_style;
+
+	/**
+	 * @var array Holds all of the available CSS styles
+	 */
+	private $modal_style_properties = ['max_width' => 'max-width', 'max_height' => 'max-height', 'min_height' => 'min-height' ];
+
+	/**
+	 * @var array Holds all of the CSS Styles the user set
+	 */
+	private $modal_set_style_properties = [];
+
+
 	public function __construct() {
 		$this->smart_overlay_config = new stdClass();
 		$this->set_smart_overlay_variables();
@@ -296,15 +312,62 @@ class Smart_Overlay {
 			return;
 		}
 
-		// Variables for the modal template
-		$display_filter = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
-		$max_width      = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'max_width' )[0];
-		$content        = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
-		$inner_style     = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
+		// IS THIS BEING USED HERE? DOESN'T LOOK LIKE IT. NOT IN THE MODAL TEMPLATE EITHER.
+//		$display_filter = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
 
+		// Variables for the modal template
+		$content  = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
+
+
+		// What Styles have been set?
+		$this->find_set_styles();
+
+		// Put together the Styles
+		$this->assemble_inline_styles( $this->modal_set_style_properties );
+
+		// Assign the Styles to a new variable for our template to use
+		$inner_style = $this->modal_inner_style;
 
 		// Load the modal markup
 		include_once dirname(__DIR__) . '/templates/modal.php';
+	}
+
+	/**
+	 * Loop through the possible Inline CSS Rules to check if there's post_meta for it
+	 */
+	private function find_set_styles(){
+		foreach( $this->modal_style_properties as $modal_style_property_meta_key => $modal_style_property ){
+			$property_meta = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . $modal_style_property_meta_key )[0];
+
+			// If there is meta, i.e., the user set a css property, add it to an array
+			if( !empty( $property_meta ) ) {
+				$this->modal_set_style_properties[ $modal_style_property ] = $property_meta;
+			}
+		}
+	}
+
+	/**
+	 * Assemble a string of CSS rules for use in the modal template
+	 *
+	 * @param array $set_styles An array of meta values
+	 */
+	private function assemble_inline_styles( $set_styles ) {
+		//No CSS was set, bail.
+		if( empty( $set_styles) ) {
+			return;
+		}
+
+		foreach( $set_styles as $style_property => $style_value ){
+
+			//Is this a single input CSS value or a dual input (one where you supply the units) ?
+			if(  is_array( $style_value ) ) {
+				$this->modal_inner_style .= $style_property . ':' . $style_value['dimension_value'] . $style_value['dimension_units'] . ';';
+			}else{
+				$this->modal_inner_style .= $style_property . ':' . $style_value . 'px;';
+			}
+		}
+
+
 	}
 
 

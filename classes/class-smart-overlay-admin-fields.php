@@ -200,8 +200,21 @@ class Smart_Overlay_Admin_Fields {
 					'pattern' => '\d*',
 					'min'     => '0',
 				),
-//				'sanitization_cb' => 'smart_overlay_absint',
-//				'escape_cb'       => 'smart_overlay_absint',
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
+				'name'            => __( 'Min Height', 'smart_overlay' ),
+				'desc'            => __( 'Minimum height of the lightbox displayed to users. If blank or zero, lightbox will only be as tall as content, plus any padding.', 'smart_overlay' ),
+				'id'              => $this->prefix . 'min_height',
+				'type'            => 'single_dimension_and_unit',
+				'attributes'      => array(
+					'type'    => 'number',
+					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
+					'pattern' => '\d*',
+					'min'     => '0',
+				),
 			)
 		);
 
