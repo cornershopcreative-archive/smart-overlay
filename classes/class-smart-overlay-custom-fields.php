@@ -94,7 +94,9 @@ class Smart_Overlay_Custom_Fields {
 	 * @return mixed
 	 */
 	public function cmb2_sanitize_single_dimension_and_unit_cb( $override_value, $value, $object_id, $field_args, $sanitizer_object ){
-
+		if( empty( $value['dimension_value'] ) ) {
+			return $value;
+		}
 		$value['dimension_value'] = abs( $value['dimension_value'] );
 
 		// If an unrecognized Unit comes through, set it as pixels
@@ -106,6 +108,8 @@ class Smart_Overlay_Custom_Fields {
 	}
 
 	/**
+	 * Javascript validation to prevent a max height smaller than the min height from submitting
+	 *
 	 * @param $post_id
 	 * @param $cmb
 	 * @link https://github.com/CMB2/CMB2-Snippet-Library/blob/master/javascript/cmb2-js-validation-required.php
@@ -136,8 +140,10 @@ class Smart_Overlay_Custom_Fields {
 						return;
 					}
 
-					// Setup some empty variables
+					// Used for error checking
 					var $first_error_row = null;
+
+					// The outermost div of max/min input
 					var $row = null;
 
 					// Mark the field red and set the error flag
