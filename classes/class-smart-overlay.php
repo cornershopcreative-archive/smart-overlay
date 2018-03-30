@@ -57,6 +57,10 @@ class Smart_Overlay {
 
 		add_action( 'init', array( $this, 'smart_overlay_get_set_styles' ), 10 );
 
+		add_action( 'init', array( $this, 'smart_overlay_display_options' ), 20 );
+		add_action( 'init', array( $this, 'smart_overlay_set_js_options' ), 22 );
+
+
 		add_action( 'wp_footer', array( $this, 'smart_overlay_footer' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_assets' ) );
 		add_action( 'admin_notices', array( $this, 'smart_overlay_admin_notices' ) );
@@ -208,20 +212,6 @@ class Smart_Overlay {
 	 * We don't inline our JS because we need jQuery dependency
 	 */
 	public function smart_overlay_assets() {
-		$display_filter    = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
-		$disable_on_mobile = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'disable_on_mobile', 1 );
-
-//		 Prepare our config object
-		$config = array(
-			'background' => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'bg_image' )[0],
-			'context'    => $display_filter,
-			'suppress'   => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'suppress' )[0],
-			'trigger'    => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'trigger' )[0],
-			'amount'     => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'trigger_amount' )[0],
-			'maxWidth'   => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'max_width' )[0],
-			'id'         => sanitize_title_with_dashes( get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'overlay_identifier' )[0] ),
-			'onMobile'   => ! $disable_on_mobile,
-		);
 
 		if ( ! is_admin() ) {
 			wp_enqueue_script(
@@ -232,10 +222,9 @@ class Smart_Overlay {
 				true
 			);
 
-			//
-			if ( 'all' === $display_filter || ( is_front_page() && 'home' === $display_filter )
-				|| ( ! is_front_page() && 'all_but_homepage' === $display_filter ) ) {
-				wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = ' . wp_json_encode( $config ) . ';' );
+			// Check if we should add our JS
+			if ( true === $this->smart_overlay_check_display() ) {
+				wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = ' . wp_json_encode( $this->smart_overlay_config->config ) . ';' );
 			}
 
 			wp_enqueue_style(
@@ -246,7 +235,6 @@ class Smart_Overlay {
 			);
 			wp_add_inline_style( 'smart-overlay', $this->modal_outer_style );
 		}
-
 	}
 
 
@@ -297,12 +285,48 @@ class Smart_Overlay {
 	}
 
 
+	/**
+	 * What page is Popup showing on and on mobile?
+	 */
+	public function smart_overlay_display_options(){
+		$this->smart_overlay_config->display_filter    = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on', true );
+		$this->smart_overlay_config->disable_on_mobile = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'disable_on_mobile', true );
+	}
+
 
 	/**
-	 *
+	 * Check if we should display on the current page
+	 */
+	public function smart_overlay_check_display(){
+
+		if ( 'all' === $this->smart_overlay_config->display_filter
+			 || ( is_front_page() && 'home' === $this->smart_overlay_config->display_filter  )
+			 || ( ! is_front_page() && 'all_but_homepage' === $this->smart_overlay_config->display_filter  ) ) {
+
+			return true;
+
+		}else{
+
+			return false;
+		}
+	}
+
+
+
+	/**
+	 * Set up the JS Config object
 	 */
 	public function smart_overlay_set_js_options(){
-
+		$this->smart_overlay_config->config = array(
+			'background' => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'bg_image' )[0],
+			'context'    => $this->smart_overlay_config->display_filter,
+			'suppress'   => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'suppress' )[0],
+			'trigger'    => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'trigger' )[0],
+			'amount'     => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'trigger_amount' )[0],
+			'maxWidth'   => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'max_width' )[0],
+			'id'         => sanitize_title_with_dashes( get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'overlay_identifier' )[0] ),
+			'onMobile'   => ! $this->smart_overlay_config->disable_on_mobile,
+		);
 	}
 
 
@@ -317,15 +341,8 @@ class Smart_Overlay {
 			return;
 		}
 
-		// IS THIS BEING USED HERE? DOESN'T LOOK LIKE IT. NOT IN THE MODAL TEMPLATE EITHER.
-//		$display_filter = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
-
 		// Variables for the modal template
 		$content  = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
-
-
-		// Assign the Styles to a new variable for our template to use
-		$inner_style = '';
 
 		// Load the modal markup
 		include_once dirname(__DIR__) . '/templates/modal.php';
@@ -344,8 +361,6 @@ class Smart_Overlay {
 				$this->modal_set_style_properties[ $modal_style_property ] = $property_meta;
 			}
 		}
-
-//		print_r( ['$this->modal_set_style_properties', $this->modal_set_style_properties] );
 	}
 
 	/**
@@ -353,7 +368,7 @@ class Smart_Overlay {
 	 *
 	 */
 	public function smart_overlay_assemble_styles( ) {
-		$this->modal_outer_style .= "\t.smart-overlay-content{" . PHP_EOL;
+		$this->modal_outer_style .= "\t.smart-overlay .smart-overlay-content{" . PHP_EOL;
 
 		foreach( $this->modal_set_style_properties as $style_property => $style_value ){
 			//Is this a single input CSS value or a dual input (one where you supply the units) ?
