@@ -224,7 +224,7 @@ class Smart_Overlay {
 
 			// Check if we should add our JS
 			if ( true === $this->smart_overlay_check_display() ) {
-				wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = ' . wp_json_encode( $this->smart_overlay_config->config ) . ';' );
+				wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = ' . wp_json_encode( $this->smart_overlay_config->js_config ) . ';' );
 			}
 
 			wp_enqueue_style(
@@ -317,16 +317,29 @@ class Smart_Overlay {
 	 * Set up the JS Config object
 	 */
 	public function smart_overlay_set_js_options(){
-		$this->smart_overlay_config->config = array(
-			'background' => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'bg_image' )[0],
+
+		//Hold all the meta Keys for the JS Object
+		$metas = [ 'bg_image', 'suppress', 'trigger', 'trigger_amount', 'max_width', 'overlay_identifier' ];
+
+		//Prepare
+		$this->smart_overlay_config->js_config = array(
 			'context'    => $this->smart_overlay_config->display_filter,
-			'suppress'   => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'suppress' )[0],
-			'trigger'    => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'trigger' )[0],
-			'amount'     => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'trigger_amount' )[0],
-			'maxWidth'   => get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'max_width' )[0],
-			'id'         => sanitize_title_with_dashes( get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'overlay_identifier' )[0] ),
 			'onMobile'   => ! $this->smart_overlay_config->disable_on_mobile,
 		);
+
+		foreach( $metas as $meta_key ) {
+			$meta = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . $meta_key, true );
+
+			if( ! empty( $meta ) ) {
+
+				//Grrr the bg_image meta is named `background` in the JS object
+				if( 'bg_image' === $meta_key ) {
+					$meta_key = 'background';
+				}
+
+				$this->smart_overlay_config->js_config[ $meta_key ] = $meta;
+			}
+		}
 	}
 
 
