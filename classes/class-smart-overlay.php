@@ -231,8 +231,12 @@ class Smart_Overlay {
 				SMART_OVERLAY_VERSION,
 				true
 			);
-			wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = '. wp_json_encode( $config ) .';' );
 
+			//
+			if ( 'all' === $display_filter || ( is_front_page() && 'home' === $display_filter )
+				|| ( ! is_front_page() && 'all_but_homepage' === $display_filter ) ) {
+				wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = ' . wp_json_encode( $config ) . ';' );
+			}
 
 			wp_enqueue_style(
 				'smart-overlay',
@@ -274,7 +278,7 @@ class Smart_Overlay {
 
 
 	/**
-	 * Loop through Smart Overlays
+	 * Loop through Smart Overlays.
 	 */
 	public function smart_overlay_post_loop() {
 		// Obviously we can only do this if there are some overlay posts defined...
@@ -285,30 +289,20 @@ class Smart_Overlay {
 
 				// Get the meta values from the current overlay.
 				$this->smart_overlay_config->current_id = get_the_ID();
-
-//				if ( 'all' === $display_filter
-//					|| ( is_front_page() && 'home' === $display_filter )
-//					|| ( ! is_front_page() && 'all_but_homepage' === $display_filter )
-//				) {
-
-//					echo wp_kses(
-//						$script_tag, [
-//							'script' => [
-//								'id' => [],
-//							],
-//						]
-//					);
-
-					// Once we get a single smart overlay, we can stop.
-//					break;
-
-//				}//end if
-
 			endwhile;
 		endif;
 
 		wp_reset_postdata();
 		wp_reset_query();
+	}
+
+
+
+	/**
+	 *
+	 */
+	public function smart_overlay_set_js_options(){
+
 	}
 
 
