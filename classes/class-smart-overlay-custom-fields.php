@@ -17,7 +17,7 @@ class Smart_Overlay_Custom_Fields {
 	/**
 	 * @var array
 	 */
-	private $unit_values = [ 'px' => 'px', 'em' => 'em', 'rem' => 'rem', 'percent' => '%' ];
+	private $unit_values = [ 'px' => 'px', '%' => '%' ]; //'em' => 'em', 'rem' => 'rem', 
 
 	/**
 	 * Initialize hooks
@@ -100,7 +100,7 @@ class Smart_Overlay_Custom_Fields {
 		$value['dimension_value'] = abs( $value['dimension_value'] );
 
 		// If an unrecognized Unit comes through, set it as pixels
-		if( ! in_array( $value['dimension_units'], ['px, em, rem, percent'], true ) ){
+		if( ! in_array( $value['dimension_units'], ['px', 'em', 'rem', '%'], true ) ){
 			$value['dimension_units'] = 'px';
 		}
 
