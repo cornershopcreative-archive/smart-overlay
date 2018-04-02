@@ -17,7 +17,7 @@ class Smart_Overlay_Custom_Fields {
 	/**
 	 * @var array
 	 */
-	private $unit_values = [ 'px' => 'px', '%' => '%' ]; //'em' => 'em', 'rem' => 'rem', 
+	private $unit_values = [ 'px' => 'px', '%' => '%' ]; //'em' => 'em', 'rem' => 'rem',
 
 	/**
 	 * Initialize hooks
@@ -158,7 +158,7 @@ class Smart_Overlay_Custom_Fields {
 					}
 
 					//Check if the max height is less than min height and if the units are the same
-					if( max_height < min_height && max_height_units === min_height_units) {
+					if( Number( max_height ) < Number( min_height ) ) {
 						add_required( $('.cmb2-id-smart-overlay-max-height') );
 						add_required( $('.cmb2-id-smart-overlay-min-height') );
 					}else{
