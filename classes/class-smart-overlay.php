@@ -3,9 +3,9 @@
  * Create the custom post type, load dependencies and add hooks
  * PHP Version 5
  *
- * @since   0.5.5
+ * @since 0.5.5
  * @package Smart_Overlay
- * @author  Cornershop Creative <devs@cshp.co>
+ * @author Cornershop Creative <devs@cshp.co>
  */
 
 if ( ! defined( 'WPINC' ) ) {
@@ -16,26 +16,40 @@ class Smart_Overlay {
 
 
 	/**
-	 * @var Holds standard class
+	 * Configuration object for the current popup
+	 *
+	 * @var StdClass
 	 */
 	private $smart_overlay_config;
 
 	/**
-	 * @var Holds the inline styles for the modal window
+	 * Inline styles for the modal window
+	 *
+	 * @var string
 	 */
 	private $modal_outer_style;
 
 	/**
-	 * @var array Holds all of the available CSS styles
+	 * All of the available CSS styles
+	 *
+	 * @var array
 	 */
-	private $modal_style_properties = ['max_width' => 'max-width', 'max_height' => 'max-height', 'min_height' => 'min-height' ];
+	private $modal_style_properties = [
+		'max_width' => 'max-width',
+		'max_height' => 'max-height',
+		'min_height' => 'min-height',
+	];
 
 	/**
-	 * @var array Holds all of the CSS Styles the user set
+	 * All of the CSS Styles the user set
+	 *
+	 * @var array
 	 */
 	private $modal_set_style_properties = [];
 
-
+	/**
+	 * Assign a stdClass to the config property, query all of the smart popups and load dependencies
+	 */
 	public function __construct() {
 		$this->smart_overlay_config = new stdClass();
 		$this->smart_overlay_post_query();
@@ -51,7 +65,6 @@ class Smart_Overlay {
 		add_action( 'manage_smart_overlay_posts_custom_column', array( $this, 'smart_overlay_custom_columns' ), 10, 2 );
 		add_filter( 'manage_smart_overlay_posts_columns', array( $this, 'smart_overlay_add_columns' ) );
 
-
 		add_action( 'init', array( $this, 'smart_overlay_post_loop' ) );
 		add_action( 'init', array( $this, 'smart_overlay_assemble_styles' ), 20 );
 
@@ -59,7 +72,6 @@ class Smart_Overlay {
 
 		add_action( 'init', array( $this, 'smart_overlay_display_options' ), 20 );
 		add_action( 'init', array( $this, 'smart_overlay_set_js_options' ), 22 );
-
 
 		add_action( 'wp_footer', array( $this, 'smart_overlay_footer' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_assets' ) );
@@ -234,7 +246,7 @@ class Smart_Overlay {
 				SMART_OVERLAY_VERSION
 			);
 			wp_add_inline_style( 'smart-overlay', $this->modal_outer_style );
-		}
+		}//end if
 	}
 
 
@@ -281,14 +293,13 @@ class Smart_Overlay {
 		endif;
 
 		wp_reset_postdata();
-		wp_reset_query();
 	}
 
 
 	/**
 	 * What page is Popup showing on and on mobile?
 	 */
-	public function smart_overlay_display_options(){
+	public function smart_overlay_display_options() {
 		$this->smart_overlay_config->display_filter    = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on', true );
 		$this->smart_overlay_config->disable_on_mobile = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'disable_on_mobile', true );
 	}
@@ -297,7 +308,7 @@ class Smart_Overlay {
 	/**
 	 * Check if we should display on the current page
 	 */
-	public function smart_overlay_check_display(){
+	public function smart_overlay_check_display() {
 
 		if ( 'all' === $this->smart_overlay_config->display_filter
 			 || ( is_front_page() && 'home' === $this->smart_overlay_config->display_filter  )
@@ -305,7 +316,7 @@ class Smart_Overlay {
 
 			return true;
 
-		}else{
+		} else {
 
 			return false;
 		}
@@ -316,24 +327,24 @@ class Smart_Overlay {
 	/**
 	 * Set up the JS Config object
 	 */
-	public function smart_overlay_set_js_options(){
+	public function smart_overlay_set_js_options() {
 
-		//Hold all the meta Keys for the JS Object
+		// Hold all the meta Keys for the JS Object
 		$metas = [ 'bg_image', 'suppress', 'trigger', 'trigger_amount', 'max_width', 'overlay_identifier' ];
 
-		//Prepare
+		// Prepare
 		$this->smart_overlay_config->js_config = array(
 			'context'    => $this->smart_overlay_config->display_filter,
 			'onMobile'   => ! $this->smart_overlay_config->disable_on_mobile,
 		);
 
-		foreach( $metas as $meta_key ) {
+		foreach ( $metas as $meta_key ) {
 			$meta = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . $meta_key, true );
 
-			if( ! empty( $meta ) ) {
+			if ( ! empty( $meta ) ) {
 
-				//Grrr the bg_image meta is named `background` in the JS object
-				if( 'bg_image' === $meta_key ) {
+				// Grrr the bg_image meta is named `background` in the JS object
+				if ( 'bg_image' === $meta_key ) {
 					$meta_key = 'background';
 				}
 
@@ -358,19 +369,19 @@ class Smart_Overlay {
 		$content  = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
 
 		// Load the modal markup
-		include_once dirname(__DIR__) . '/templates/modal.php';
+		include_once dirname( __DIR__ ) . '/templates/modal.php';
 	}
 
 	/**
 	 * Loop through the possible CSS Rules to check if there's post_meta for it
 	 */
-	public function smart_overlay_get_set_styles(){
+	public function smart_overlay_get_set_styles() {
 
-		foreach( $this->modal_style_properties as $modal_style_property_meta_key => $modal_style_property ){
+		foreach ( $this->modal_style_properties as $modal_style_property_meta_key => $modal_style_property ) {
 			$property_meta = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . $modal_style_property_meta_key , true );
 
 			// If there is meta, i.e., the user set a css property, add it to an array
-			if( !empty( $property_meta ) ) {
+			if ( ! empty( $property_meta ) ) {
 				$this->modal_set_style_properties[ $modal_style_property ] = $property_meta;
 			}
 		}
@@ -378,19 +389,18 @@ class Smart_Overlay {
 
 	/**
 	 * Assemble a string of CSS rules for use inside of a style tag
-	 *
 	 */
-	public function smart_overlay_assemble_styles( ) {
+	public function smart_overlay_assemble_styles() {
 		$this->modal_outer_style .= "\t.smart-overlay .smart-overlay-content{" . PHP_EOL;
 
-		foreach( $this->modal_set_style_properties as $style_property => $style_value ){
-			//Is this a single input CSS value or a dual input (one where you supply the units) ?
-			if(  is_array( $style_value ) ) {
+		foreach ( $this->modal_set_style_properties as $style_property => $style_value ) {
+			// Is this a single input CSS value or a dual input (one where you supply the units) ?
+			if ( is_array( $style_value ) ) {
 				// Make the value for dimensions isn't 0
-				if( ! empty( $style_value['dimension_value'] ) ) {
+				if ( ! empty( $style_value['dimension_value'] ) ) {
 					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value['dimension_value'] . $style_value['dimension_units'] . ';' . PHP_EOL;
 				}
-			}else{
+			} else {
 				$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
 			}
 		}

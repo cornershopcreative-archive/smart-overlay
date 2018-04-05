@@ -15,9 +15,11 @@ if ( ! defined( 'WPINC' ) ) {
 class Smart_Overlay_Custom_Fields {
 
 	/**
+	 * All of the values for dimension units.
+	 *
 	 * @var array
 	 */
-	private $unit_values = [ 'px' => 'px', '%' => '%' ]; //'em' => 'em', 'rem' => 'rem',
+	private $unit_values = [ 'px', '%' ];
 
 	/**
 	 * Initialize hooks
@@ -31,53 +33,63 @@ class Smart_Overlay_Custom_Fields {
 	/**
 	 * Creates a new field for displaying a number field next to select field. Used for specifying dimension and unit (1000px, 100rem, etc)
 	 *
-	 * @param $field
-	 * @param $value
-	 * @param $object_id
-	 * @param $object_type
-	 * @param $field_type
+	 * @param string $field        The current CMB2_Field object.
+	 * @param string $value        The value of this field passed through the escaping filter. It defaults to sanitize_text_field.
+	 * @param int    $object_id       The id of the object you are working with. Most commonly, the post id.
+	 * @param string $object_type  The type of object you are working with. Most commonly, post.
+	 * @param object $field_type   This is an instance of the CMB2_Types object and gives you access to all of the methods that CMB2 uses to build its field types.
 	 */
-	public function cmb2_render_single_dimension_and_unit_cb( $field, $value, $object_id, $object_type, $field_type ){
+	public function cmb2_render_single_dimension_and_unit_cb( $field, $value, $object_id, $object_type, $field_type ) {
 
-
-		$value = wp_parse_args( $value, array(
-			'dimension_value' => '',
-			'dimension_units' => '',
-		));
+		$value = wp_parse_args(
+			$value, array(
+				'dimension_value' => '',
+				'dimension_units' => '',
+			)
+		);
 	?>
-		<div class="alignleft"><p><label for="<?php echo $field_type->_id('dimension_value')?>">Value</label></p>
-			<?php echo $field_type->input( array(
-				'name'  => $field_type->_name( '[dimension_value]' ),
-				'id'    => $field_type->_id( '_dimension_value' ),
-				'value' => $value['dimension_value'],
-				'desc'  => '',
-			) ); ?>
+		<div class="alignleft"><p><label for="<?php echo $field_type->_id( 'dimension_value' ); // WPCS: XSS ok; ?>">Value</label></p>
+			<?php
+			echo $field_type->input(
+				array(
+					'name'  => $field_type->_name( '[dimension_value]' ), // WPCS: XSS ok;
+					'id'    => $field_type->_id( '_dimension_value' ), // WPCS: XSS ok;
+					'value' => $value['dimension_value'], // WPCS: XSS ok;
+					'desc'  => '',
+				)
+			); // WPCS: XSS ok;
+			?>
 		</div>
-		<div class="alignleft"><p><label for="<?php echo $field_type->_id('dimension_units')?>">Units</label></p>
-			<?php echo $field_type->select( array(
-				'name'  => $field_type->_name( '[dimension_units]' ),
-				'id'    => $field_type->_id( '_dimension_units' ),
-				'value' => $value['dimension_units'],
-				'options'=> $this->cmb2_unit_options( $value['dimension_units'] ),
-				'desc'  => '',
-			) ); ?>
+		<div class="alignleft"><p><label for="<?php echo $field_type->_id( 'dimension_units' ); // WPCS: XSS ok; ?>">Units</label></p>
+			<?php
+			echo $field_type->select(
+				array(
+					'name'  => $field_type->_name( '[dimension_units]' ), // WPCS: XSS ok;
+					'id'    => $field_type->_id( '_dimension_units' ), // WPCS: XSS ok;
+					'value' => $value['dimension_units'], // WPCS: XSS ok;
+					'options' => $this->cmb2_unit_options( $value['dimension_units'] ), // WPCS: XSS ok;
+					'desc'  => '',
+				)
+			); // WPCS: XSS ok;
+			?>
 		</div>
 		<br class="clear">
-		<?php echo $field_type->_desc( true ); ?>
+		<?php echo $field_type->_desc( true ); // WPCS: XSS ok; ?>
 
 	<?php
 	}
 
 	/**
-	 * @param bool $value
+	 * Set a options for a select field
 	 *
+	 * @param bool $value Select Option Item Value/Display Value.
 	 * @return string
 	 */
-	private function cmb2_unit_options( $value = false ){
+	private function cmb2_unit_options( $value = false ) {
 		$options = '';
 
-		foreach ( $this->unit_values as $opt_val => $display ) {
-			$options .= '<option value="' . $opt_val . '" ' . selected( $value, $opt_val, false ) . '>' . $display . '</option>';
+		foreach ( $this->unit_values as $option ) {
+			$options .= '<option value="' . $option . '" ' . selected( $value, $option, false ) . '>' . $option . '</option>';
 		}
 		return $options;
 	}
@@ -85,22 +97,23 @@ class Smart_Overlay_Custom_Fields {
 	/**
 	 * Sanitize the dimension and unit field
 	 *
-	 * @param $override_value
-	 * @param $value
-	 * @param $object_id
-	 * @param $field_args
-	 * @param $sanitizer_object
+	 * @param string $override_value Sanitization override value to return. It is passed in as null, and is what we will modify to short-circuit CMB2's saving mechanism.
+	 * @param string $value The actual field value.
+	 * @param int    $object_id The id of the object you are working with. Most commonly, the post id.
+
+	 * @param array  $field_args The field arguments.
+	 * @param object $sanitizer_object This is an instance of the CMB2_Sanitize object and gives you access to all of the methods that CMB2 uses to sanitize its field values.
 	 *
 	 * @return mixed
 	 */
-	public function cmb2_sanitize_single_dimension_and_unit_cb( $override_value, $value, $object_id, $field_args, $sanitizer_object ){
-		if( empty( $value['dimension_value'] ) ) {
+	public function cmb2_sanitize_single_dimension_and_unit_cb( $override_value, $value, $object_id, $field_args, $sanitizer_object ) {
+		if ( empty( $value['dimension_value'] ) ) {
 			return $value;
 		}
 		$value['dimension_value'] = abs( $value['dimension_value'] );
 
 		// If an unrecognized Unit comes through, set it as pixels
-		if( ! in_array( $value['dimension_units'], ['px', 'em', 'rem', '%'], true ) ){
+		if ( ! in_array( $value['dimension_units'], $this->unit_values, true ) ) {
 			$value['dimension_units'] = 'px';
 		}
 
@@ -110,11 +123,11 @@ class Smart_Overlay_Custom_Fields {
 	/**
 	 * Javascript validation to prevent a max height smaller than the min height from submitting
 	 *
-	 * @param $post_id
-	 * @param $cmb
+	 * @param array $cmb_id The current box ID.
+	 * @param int   $obj_id The ID of the current object.
 	 * @link https://github.com/CMB2/CMB2-Snippet-Library/blob/master/javascript/cmb2-js-validation-required.php
 	 */
-	public function cmb2_after_form_do_js_validation( $post_id, $cmb ) {
+	public function cmb2_after_form_do_js_validation( $cmb_id, $obj_id ) {
 		static $added = false;
 		// Only add this to the page once (not for every metabox)
 		if ( $added ) {
@@ -169,7 +182,7 @@ class Smart_Overlay_Custom_Fields {
 					// Check for errors
 					if ( $first_error_row ) {
 						evt.preventDefault();
-						alert( '<?php _e( 'The max height cannot be less than the minimum height.', 'smart_overlay' ); ?> ');
+						alert( '<?php _e( 'The max height cannot be less than the minimum height.', 'smart_overlay' ); // PHPCS: XSS ok. ?> ');
 						$htmlbody.animate({
 							scrollTop: ( $first_error_row.offset().top - 200 )
 						}, 1000);

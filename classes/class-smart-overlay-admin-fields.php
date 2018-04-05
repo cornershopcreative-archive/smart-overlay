@@ -15,21 +15,27 @@ if ( ! defined( 'WPINC' ) ) {
 class Smart_Overlay_Admin_Fields {
 
 	/**
-	 * @var Holds the CMB2 fields
+	 * Holds the CMB2 fields
+	 *
+	 * @var object
 	 */
 	private $smart_overlay_fields;
 
 
 
 	/**
-	 * @var String used for CMB2
+	 * Set the post type for CMB2
+	 *
+	 * @var array
 	 */
 	private $post_type;
 
 
 
 	/**
-	 * @var String used for CMB2
+	 * Prefix for CMB2
+	 *
+	 * @var String
 	 */
 	private $prefix;
 
@@ -239,7 +245,7 @@ class Smart_Overlay_Admin_Fields {
 	 * @return mixed          Returns true or '', the blank default.
 	 */
 	public function smart_overlay_set_checkbox_default_for_new_post( $default ) {
-		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' );
+		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' ); // WPCS: CSRF ok.
 	}
 
 
