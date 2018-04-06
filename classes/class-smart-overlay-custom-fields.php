@@ -107,7 +107,9 @@ class Smart_Overlay_Custom_Fields {
 	 * @return mixed
 	 */
 	public function cmb2_sanitize_single_dimension_and_unit_cb( $override_value, $value, $object_id, $field_args, $sanitizer_object ) {
+		// If no value was entered, set the units blank and bail.
 		if ( empty( $value['dimension_value'] ) ) {
+			$value['dimension_units'] = '';
 			return $value;
 		}
 		$value['dimension_value'] = abs( $value['dimension_value'] );

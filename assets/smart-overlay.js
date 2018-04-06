@@ -8,7 +8,7 @@
 		var force = window.location.search.indexOf("forceoverlay");
 		var alreadyOpened = false;
 		var settings = $.extend({
-			background : null,
+			// background : '',
 			context : 'none',
 			suppress: 'never',
 			trigger : 'immediate',
@@ -85,7 +85,9 @@
 				namespace: 'smart-overlay',
 				type:'html',
 				beforeOpen: function(e) {
-					$('.smart-overlay-content').css('background-image', 'url(' + settings.background + ')');
+					if( settings.background ) {
+						$('.smart-overlay-content').css('background-image', 'url(' + settings.background + ')');
+					}
 				},
 				afterOpen: function(e) {
 					$( document ).trigger( 'smartOverlayOpen' );
