@@ -65,13 +65,13 @@ class Smart_Overlay {
 		add_action( 'manage_smart_overlay_posts_custom_column', array( $this, 'smart_overlay_custom_columns' ), 10, 2 );
 		add_filter( 'manage_smart_overlay_posts_columns', array( $this, 'smart_overlay_add_columns' ) );
 
-		add_action( 'init', array( $this, 'smart_overlay_post_loop' ) );
-		add_action( 'init', array( $this, 'smart_overlay_assemble_styles' ), 20 );
+		add_action( 'wp', array( $this, 'smart_overlay_post_loop' ), 15 );
+		add_action( 'wp', array( $this, 'smart_overlay_assemble_styles' ), 20 );
 
-		add_action( 'init', array( $this, 'smart_overlay_get_set_styles' ), 10 );
+		add_action( 'wp', array( $this, 'smart_overlay_get_set_styles' ), 25 );
 
-		add_action( 'init', array( $this, 'smart_overlay_display_options' ), 20 );
-		add_action( 'init', array( $this, 'smart_overlay_set_js_options' ), 22 );
+//		add_action( 'wp', array( $this, 'smart_overlay_display_options' ), 20 );
+		add_action( 'wp', array( $this, 'smart_overlay_set_js_options' ), 30 );
 
 		add_action( 'wp_footer', array( $this, 'smart_overlay_footer' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_assets' ) );
@@ -235,7 +235,7 @@ class Smart_Overlay {
 			);
 
 			// Check if we should add our JS
-			if ( true === $this->smart_overlay_check_display() ) {
+			if ( $this->smart_overlay_config->display_filter ) {
 				wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = ' . wp_json_encode( $this->smart_overlay_config->js_config ) . ';' );
 			}
 
@@ -287,8 +287,20 @@ class Smart_Overlay {
 
 				$this->smart_overlay_config->overlays->the_post();
 
-				// Get the meta values from the current overlay.
-				$this->smart_overlay_config->current_id = get_the_ID();
+				$id = get_the_ID();
+
+				$meta = get_post_meta( $id, $this->smart_overlay_config->prefix . 'display_lightbox_on', true );
+				
+				if ( 'all' === $meta || ( is_front_page() && 'home' === $meta ) || ( ! is_front_page() && 'all_but_homepage' === $meta ) ) {
+					$this->smart_overlay_config->current_id = $id;
+					$this->smart_overlay_config->display_filter = true;
+					break;
+				}
+
+//				$this->smart_overlay_config->display_filter = true;
+
+//				$this->check_if_show_mobile( get_the_ID(), 'disable_on_mobile' );
+
 			endwhile;
 		endif;
 
@@ -297,27 +309,54 @@ class Smart_Overlay {
 
 
 	/**
-	 * What page is Popup showing on and on mobile?
+	 * Check if a Smart Overlay Post has the meta values that says it should display on current page
+	 *
+	 * @param int $smart_overlay_id ID of smart overlay post ID to check
+	 * @return bool
 	 */
-	public function smart_overlay_display_options() {
-		$this->smart_overlay_config->display_filter    = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on', true );
-		$this->smart_overlay_config->disable_on_mobile = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'disable_on_mobile', true );
+	public function smart_overlay_display_options( $smart_overlay_id ) {
+
+		$meta = get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'display_lightbox_on', true );
+
+//		error_log( print_r($meta, true) );
+
+		// If we are checking the meta for `display_lightbox_on` and does that value equal all,home,all_but_homepage?
+		if(  $this->smart_overlay_check_display( $meta ) ) {
+			// We found the right overlay!
+			$this->smart_overlay_config->display_filter = true;
+			return true;
+		}
+
+		return false;
 	}
 
 
+	public function check_if_show_mobile(){
+		$this->smart_overlay_config->disable_on_mobile = false;
+		// If we are checking the mobile display
+//		if( 'disable_on_mobile' == $meta_key ) {
+//			$this->smart_overlay_config->disable_on_mobile = $meta;
+//		}else{
+//			$this->smart_overlay_config->disable_on_mobile = false;
+//		}
+	}
+
 	/**
-	 * Check if we should display on the current page
+	 * Helper function that compares the display_lightbox_on meta value
+	 *
+	 * @param string $meta The Meta key for `this->smart_overlay_config->prefix . display_lightbox_on` has only
+	 * 3 possible values to determine which page a smart overlay should display on.
+	 * @return bool
 	 */
-	public function smart_overlay_check_display() {
-
-		if ( 'all' === $this->smart_overlay_config->display_filter
-			 || ( is_front_page() && 'home' === $this->smart_overlay_config->display_filter  )
-			 || ( ! is_front_page() && 'all_but_homepage' === $this->smart_overlay_config->display_filter  ) ) {
-
+	public function smart_overlay_check_display( $meta ) {
+		error_log( print_r( $meta, true) );
+		if ( 'all' === $meta || is_front_page() && 'home' === $meta || ! is_front_page() && 'all_but_homepage' === $meta   ) {
+//		if( 'home' === $meta ){
+			error_log( 'smart_overlay_check_display TRUE' );
 			return true;
 
 		} else {
-
+			error_log( 'smart_overlay_check_display FALSE' );
 			return false;
 		}
 	}
@@ -335,7 +374,7 @@ class Smart_Overlay {
 		// Prepare
 		$this->smart_overlay_config->js_config = array(
 			'context'    => $this->smart_overlay_config->display_filter,
-			'onMobile'   => ! $this->smart_overlay_config->disable_on_mobile,
+//			'onMobile'   => ! $this->smart_overlay_config->disable_on_mobile,
 		);
 
 		foreach ( $metas as $meta_key ) {
