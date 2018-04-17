@@ -226,6 +226,22 @@ class Smart_Overlay_Admin_Fields {
 
 		$this->smart_overlay_fields->add_field(
 			array(
+				'name'              => __( 'Padding', 'smart_overlay' ),
+				'desc'              => __( 'Padding (in pixels) of the lightbox.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'padding',
+				'type'              => 'text_small',
+				'sanitization_cb'   => 'smart_overlay_absint',
+				'escape_cb'         => 'smart_overlay_absint',
+				'attributes'        => array(
+					'type'          => 'number',
+					'pattern'       => '\d*',
+					'min'           => '0',
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
 				'name'    => 'Disable On Mobile',
 				'desc'    => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
 				'id'      => $this->prefix . 'disable_on_mobile',

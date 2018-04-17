@@ -38,6 +38,7 @@ class Smart_Overlay {
 		'max_width' => 'max-width',
 		'max_height' => 'max-height',
 		'min_height' => 'min-height',
+		'padding'	=> 'padding'
 	];
 
 	/**
