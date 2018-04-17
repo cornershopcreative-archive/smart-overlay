@@ -38,7 +38,10 @@ class Smart_Overlay {
 		'max_width' => 'max-width',
 		'max_height' => 'max-height',
 		'min_height' => 'min-height',
-		'padding'	=> 'padding'
+		'padding'	=> 'padding',
+		'border_width'	=> 'border-width',
+		'border_radius'	=> 'border-radius',
+		'border_color'	=> 'border-color',
 	];
 
 	/**
@@ -72,7 +75,8 @@ class Smart_Overlay {
 
 		add_action( 'wp_footer', array( $this, 'smart_overlay_footer' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_assets' ) );
-		add_action( 'admin_notices', array( $this, 'smart_overlay_admin_notices' ) );
+		add_action( 'admin_notices', array( $this, 'smart_overlay_multiple_overlay_admin_notice' ) );
+		add_action( 'post_updated_messages', array( $this, 'smart_overlay_cache_admin_notice' ), 10, 1 );
 	}
 
 
@@ -440,8 +444,18 @@ class Smart_Overlay {
 					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value['dimension_value'] . $style_value['dimension_units'] . ';' . PHP_EOL;
 				}
 			} else {
-				$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
+				// Check if we should append pixels
+				if ( in_array( $style_property, [ 'border-color', '' ]) ) {
+					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . ';' . "\n";
+				} else {
+					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
+				}
 			}
+		}
+
+		// If they defined a border, set a solid style for it
+		if ( array_key_exists( 'border-width', $this->modal_set_style_properties ) ) {
+			$this->modal_outer_style .= "\t\tborder-style:solid;\n";
 		}
 
 		$this->modal_outer_style .= "\t}";
@@ -450,7 +464,7 @@ class Smart_Overlay {
 	/**
 	 * Admin notice to explain collisions if there's more than one overlay.
 	 */
-	public function smart_overlay_admin_notices() {
+	public function smart_overlay_multiple_overlay_admin_notice() {
 
 		$overlay_count = wp_count_posts( 'smart_overlay' );
 		$current_screen = get_current_screen();
@@ -462,5 +476,24 @@ class Smart_Overlay {
 		 </div>
 			<?php
 		endif;
+	}
+
+
+	// Displays an admin notice when a smart overlay post is updated.
+	public function smart_overlay_cache_admin_notice( $messages ) {
+		$post = get_post();
+		$post_type = get_post_type( $post );
+
+		// If we are editing another type of post, return the default messages
+		if( 'smart_overlay' != $post_type ) {
+			return $messages;
+		}
+
+		// Use the existing `update` message for posts.
+		// Otherwise we have to define all 10 messages for the smart_overlay post type.
+		// i.e., $message['smart_overlay'][1], $message['smart_overlay'][2] ...
+		$messages['post'][1] = __( 'Post updated. Please clear your cache.', 'smart_overlay' );
+
+		return $messages;
 	}
 }
