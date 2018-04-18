@@ -23,39 +23,59 @@ class Smart_Overlay {
 	private $smart_overlay_config;
 
 	/**
-	 * Inline styles for the modal window
+	 * Styles for the popup window and background
 	 *
 	 * @var string
 	 */
-	private $modal_outer_style;
+	private $modal_styles_output;
+
+	/**
+	 * Styles for the modal background mask
+	 *
+	 * @var string
+	 */
+	private $modal_outer_style_properties;
 
 	/**
 	 * All of the available CSS styles
 	 *
 	 * @var array
 	 */
-	private $modal_style_properties = [
-		'max_width' => 'max-width',
-		'max_height' => 'max-height',
-		'min_height' => 'min-height',
-		'padding'	=> 'padding',
-		'border_width'	=> 'border-width',
-		'border_radius'	=> 'border-radius',
-		'border_color'	=> 'border-color',
-		'opacity'		=> 'opacity',
-	];
+	private $modal_inner_style_properties;
 
 	/**
-	 * All of the CSS Styles the user set
+	 * All of the CSS Styles the user set for the inner modal
 	 *
-	 * @var array
+	 * @var bool
 	 */
-	private $modal_set_style_properties = [];
+	private $modal_inner_has_set_style_properties;
 
 	/**
-	 * Assign a stdClass to the config property, query all of the smart popups and load dependencies
+	 * All of the CSS Styles the user set for the outer modal
+	 *
+	 * @var bool
+	 */
+	private $modal_outer_has_set_style_properties;
+
+	/**
+	 * Assign a stdClass to the config property, query all of the smart popups, load dependencies and set all of the
+	 * possible CSS properties
 	 */
 	public function __construct() {
+		$this->modal_inner_style_properties = [
+				'max_width' => 'max-width',
+				'max_height' => 'max-height',
+				'min_height' => 'min-height',
+				'padding'	=> 'padding',
+				'border_width'	=> 'border-width',
+				'border_radius'	=> 'border-radius',
+				'border_color'	=> 'border-color',
+				'opacity'		=> 'opacity',
+			];
+		$this->modal_outer_style_properties = [
+				'opacity_outer'		=> 'opacity'
+		];
+
 		$this->smart_overlay_config = new stdClass();
 		$this->smart_overlay_post_query();
 		$this->load_dependencies();
@@ -71,7 +91,8 @@ class Smart_Overlay {
 		add_filter( 'manage_smart_overlay_posts_columns', array( $this, 'smart_overlay_add_columns' ) );
 
 		add_action( 'wp', array( $this, 'smart_overlay_post_loop' ), 15 );
-		add_action( 'wp', array( $this, 'smart_overlay_get_set_styles' ), 50 );
+		add_action( 'wp', array( $this, 'smart_overlay_get_inner_set_styles' ), 50 );
+		add_action( 'wp', array( $this, 'smart_overlay_get_outer_set_styles' ), 50 );
 		add_action( 'wp', array( $this, 'smart_overlay_set_js_options' ), 30 );
 
 		add_action( 'wp_footer', array( $this, 'smart_overlay_footer' ) );
@@ -250,8 +271,8 @@ class Smart_Overlay {
 			);
 
 			// Check if any styles were set, if so print them on the page.
-			if ( ! empty( $this->modal_set_style_properties ) ) {
-				wp_add_inline_style( 'smart-overlay', $this->modal_outer_style );
+			if ( ! $this->modal_inner_has_set_style_properties  || ! $this->modal_outer_has_set_style_properties ) {
+				wp_add_inline_style( 'smart-overlay', $this->modal_styles_output );
 			}
 		}//end if
 	}
@@ -406,9 +427,49 @@ class Smart_Overlay {
 	/**
 	 * Loop through the preset CSS Rules to check if there's post_meta for it
 	 */
-	public function smart_overlay_get_set_styles() {
+	public function smart_overlay_get_inner_set_styles() {
 
-		foreach ( $this->modal_style_properties as $modal_style_property_meta_key => $modal_style_property ) {
+		$styles = $this->smart_overlay_get_style_metas( $this->modal_inner_style_properties );
+
+		// We have CSS. Assemble the styles.
+		if ( $styles ) {
+			$this->modal_inner_has_set_style_properties = true;
+			$this->smart_overlay_assemble_styles( '.smart-overlay .smart-overlay-content', $styles );
+			return;
+		}
+
+		// This property gets checked if its empty or not inside of the smart_overlay_assets method
+		unset( $this->modal_inner_has_set_style_properties );
+	}
+
+	/**
+	 * Loop through the preset CSS Rules to check if there's post_meta for it
+	 */
+	public function smart_overlay_get_outer_set_styles() {
+
+		$styles = $this->smart_overlay_get_style_metas( $this->modal_outer_style_properties );
+
+		// We have CSS. Assemble the styles.
+		if ( $styles ) {
+			$this->modal_outer_has_set_style_properties = true;
+			$this->smart_overlay_assemble_styles( '.smart-overlay', $styles );
+			return;
+		}
+
+		// This property gets checked if its empty or not inside of the smart_overlay_assets method
+		unset( $this->modal_outer_has_set_style_properties );
+	}
+
+	/**
+	 * Helper function for getting CSS out of post meta
+	 *
+	 * @param array $properties an array of possible CSS properties that could be set
+	 *
+	 * @return bool|array $style returns false if no CSS properties are set in the post meta
+	 */
+	public function smart_overlay_get_style_metas( $properties ) {
+		$style = false;
+		foreach ( $properties as $modal_style_property_meta_key => $modal_style_property ) {
 			$property_meta = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . $modal_style_property_meta_key , true );
 
 			// If there is meta, i.e., the user set a css property, add it to an array
@@ -418,49 +479,45 @@ class Smart_Overlay {
 				if ( is_array( $property_meta ) && '' === $property_meta['dimension_value'] ) {
 					continue;
 				}
-				$this->modal_set_style_properties[ $modal_style_property ] = $property_meta;
+				$style[ $modal_style_property ] = $property_meta;
 			}
 		}
 
-		// We have CSS. Assemble the styles.
-		if ( $this->modal_set_style_properties ) {
-			$this->smart_overlay_assemble_styles();
-			return;
-		}
-
-		// This property gets checked if its empty or not inside of the smart_overlay_assets method
-		unset( $this->modal_set_style_properties );
+		return $style;
 	}
 
 	/**
 	 * Assemble a string of CSS rules for use inside of a style tag
+	 *
+	 * @param string $selector the CSS selector to apply these styles to
+	 * @param array $properties array of CSS properties
 	 */
-	public function smart_overlay_assemble_styles() {
-		$this->modal_outer_style .= "\t.smart-overlay .smart-overlay-content{" . PHP_EOL;
+	public function smart_overlay_assemble_styles( $selector = '.smart-overlay', $properties ) {
+		$this->modal_styles_output .= "\t" . $selector . "{" . PHP_EOL;
 
-		foreach ( $this->modal_set_style_properties as $style_property => $style_value ) {
+		foreach ( $properties as $style_property => $style_value ) {
 			// Is this a single input CSS value or a dual input (one where you supply the units) ?
 			if ( is_array( $style_value ) ) {
 				// Make the value for dimensions isn't 0
 				if ( ! empty( $style_value['dimension_value'] ) ) {
-					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value['dimension_value'] . $style_value['dimension_units'] . ';' . PHP_EOL;
+					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value['dimension_value'] . $style_value['dimension_units'] . ';' . PHP_EOL;
 				}
 			} else {
 				// Check if we should append pixels
 				if ( in_array( $style_property, [ 'border-color', 'opacity' ] ) ) {
-					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . ';' . "\n";
+					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . ';' . "\n";
 				} else {
-					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
+					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
 				}
 			}
 		}
 
 		// If they defined a border, set a solid style for it
-		if ( array_key_exists( 'border-width', $this->modal_set_style_properties ) ) {
-			$this->modal_outer_style .= "\t\tborder-style:solid;\n";
+		if ( array_key_exists( 'border-width', $properties ) ) {
+			$this->modal_styles_output .= "\t\tborder-style:solid;\n";
 		}
 
-		$this->modal_outer_style .= "\t}";
+		$this->modal_styles_output .= "\t}";
 	}
 
 	/**

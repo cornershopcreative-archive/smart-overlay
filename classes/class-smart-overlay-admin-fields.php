@@ -21,6 +21,8 @@ class Smart_Overlay_Admin_Fields {
 	 */
 	private $smart_overlay_fields;
 
+	private $smart_overlay_mask_fields;
+
 
 
 	/**
@@ -67,6 +69,16 @@ class Smart_Overlay_Admin_Fields {
 			array(
 				'id'            => $this->prefix . 'options',
 				'title'         => __( 'Smart Overlay Options', 'smart_overlay' ),
+				'object_types'  => $this->post_type,
+				'context'       => 'side',
+				'priority'      => 'low',
+			)
+		);
+
+		$this->smart_overlay_mask_fields = new_cmb2_box(
+			array(
+				'id'            => $this->prefix . '',
+				'title'         => __( 'Smart Overlay Outer Styles', 'smart_overlay' ),
 				'object_types'  => $this->post_type,
 				'context'       => 'side',
 				'priority'      => 'low',
