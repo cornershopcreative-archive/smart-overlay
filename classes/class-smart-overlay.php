@@ -42,6 +42,7 @@ class Smart_Overlay {
 		'border_width'	=> 'border-width',
 		'border_radius'	=> 'border-radius',
 		'border_color'	=> 'border-color',
+		'opacity'		=> 'opacity',
 	];
 
 	/**
@@ -77,6 +78,7 @@ class Smart_Overlay {
 		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_assets' ) );
 		add_action( 'admin_notices', array( $this, 'smart_overlay_multiple_overlay_admin_notice' ) );
 		add_action( 'post_updated_messages', array( $this, 'smart_overlay_cache_admin_notice' ), 10, 1 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'smart_overlay_admin_scripts' ) );
 	}
 
 
@@ -445,7 +447,7 @@ class Smart_Overlay {
 				}
 			} else {
 				// Check if we should append pixels
-				if ( in_array( $style_property, [ 'border-color', '' ]) ) {
+				if ( in_array( $style_property, [ 'border-color', 'opacity' ] ) ) {
 					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . ';' . "\n";
 				} else {
 					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
@@ -495,5 +497,12 @@ class Smart_Overlay {
 		$messages['post'][1] = __( 'Post updated. Please clear your cache.', 'smart_overlay' );
 
 		return $messages;
+	}
+
+	public function smart_overlay_admin_scripts( $hook ) {
+		if( 'post.php' != $hook ) {
+			return;
+		}
+		wp_enqueue_style( 'admin-styles', plugins_url( '/assets/smart-overlay-admin.css', dirname( __FILE__ ) ) );
 	}
 }

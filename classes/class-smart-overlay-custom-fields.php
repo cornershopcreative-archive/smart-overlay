@@ -28,6 +28,8 @@ class Smart_Overlay_Custom_Fields {
 		add_action( 'cmb2_render_single_dimension_and_unit', array( $this, 'cmb2_render_single_dimension_and_unit_cb' ), 10, 5 );
 		add_filter( 'cmb2_sanitize_single_dimension_and_unit', array( $this, 'cmb2_sanitize_single_dimension_and_unit_cb' ), 10, 5 );
 		add_filter( 'cmb2_after_form', array( $this, 'cmb2_after_form_do_js_validation' ), 10, 2 );
+		add_action( 'cmb2_render_range_slider', array( $this, 'cmb2_render_range_slider_cb' ), 10, 5 );
+		add_filter( 'cmb2_after_form', array( $this, 'cmb2_after_form_do_slider_ui' ), 10, 2 );
 	}
 
 	/**
@@ -77,6 +79,22 @@ class Smart_Overlay_Custom_Fields {
 		<?php echo $field_type->_desc( true ); // WPCS: XSS ok; ?>
 
 	<?php
+	}
+
+	/**
+	 * Creates a new field for displaying a number field next to select field. Used for specifying dimension and unit (1000px, 100rem, etc)
+	 *
+	 * @param string $field        The current CMB2_Field object.
+	 * @param string $escaped_value        The value of this field passed through the escaping filter. It defaults to sanitize_text_field.
+	 * @param int    $object_id       The id of the object you are working with. Most commonly, the post id.
+	 * @param string $object_type  The type of object you are working with. Most commonly, post.
+	 * @param object $field_type_object   This is an instance of the CMB2_Types object and gives you access to all of the methods that CMB2 uses to build its field types.
+	 */
+	public function cmb2_render_range_slider_cb( $field, $escaped_value, $object_id, $object_type, $field_type_object ) {
+		echo '<div class="range-slider">';
+		echo $field_type_object->input( array( 'type' => 'range', 'min' => '0', 'max' => '1', 'step' => '0.1', 'class' => 'range-slider__range' ) );
+		echo '<span class="range-slider__value">0</span>';
+		echo '</div>';
 	}
 
 	/**
@@ -194,6 +212,41 @@ class Smart_Overlay_Custom_Fields {
 			});
 		</script>
 	<?php
+	}
+
+
+	public function cmb2_after_form_do_slider_ui( $cmb_id, $obj_id ) {
+		static $added = false;
+		// Only add this to the page once (not for every metabox)
+		if ( $added ) {
+		   return;
+		}
+		$added = true;
+		?>
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				var rangeSlider = function () {
+					var slider = $('.range-slider'),
+						range = $('.range-slider__range'),
+						value = $('.range-slider__value');
+
+						slider.each(function () {
+							value.each(function () {
+								var value = $(this).siblings(range).attr('value');
+								$(this).html(value);
+							});
+
+							range.on('input', function () {
+								$(this).siblings( '.range-slider__value' ).html( this.value );
+							});
+						});
+				};
+
+				rangeSlider();
+			});
+		</script>
+
+		<?php
 	}
 
 }

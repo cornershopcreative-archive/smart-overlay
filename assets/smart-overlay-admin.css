@@ -1,0 +1,11 @@
+/* Number range sliders */
+.range-slider {
+	position: relative;
+}
+
+/* Number range sliders' display value */
+.range-slider .range-slider__value {
+	position: absolute;
+	top: 4px;
+	right: 80px;
+}

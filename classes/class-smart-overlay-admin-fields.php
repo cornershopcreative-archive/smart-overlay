@@ -242,6 +242,65 @@ class Smart_Overlay_Admin_Fields {
 
 		$this->smart_overlay_fields->add_field(
 			array(
+				'name'              => __( 'Border Width', 'smart_overlay' ),
+				'desc'              => __( 'Border width (in pixels) of the lightbox.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'border_width',
+				'type'              => 'text_small',
+				'sanitization_cb'   => 'smart_overlay_absint',
+				'escape_cb'         => 'smart_overlay_absint',
+				'attributes'        => array(
+					'type'          => 'number',
+					'pattern'       => '\d*',
+					'min'           => '0',
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
+				'name'              => __( 'Border Radius', 'smart_overlay' ),
+				'desc'              => __( 'Border radius (in pixels) of the lightbox.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'border_radius',
+				'type'              => 'text_small',
+				'sanitization_cb'   => 'smart_overlay_absint',
+				'escape_cb'         => 'smart_overlay_absint',
+				'attributes'        => array(
+					'type'          => 'number',
+					'pattern'       => '\d*',
+					'min'           => '0',
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
+				'name'              => __( 'Border Color', 'smart_overlay' ),
+				'desc'              => __( 'Border color of the lightbox.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'border_color',
+				'type'              => 'colorpicker',
+				'options'           => array(
+					'alpha'         => true,
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
+				'name'              => __( 'Opacity', 'smart_overlay' ),
+				'desc'              => __( 'The opacity of the lightbox. 0 is invisible, 1 is full color.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'opacity',
+				'type'              => 'range_slider',
+				'sanitization_cb'   => 'smart_overlay_absint',
+				'escape_cb'         => 'smart_overlay_absint',
+				'attributes'        => array(
+					'pattern'       => '\d*',
+					'min'           => '0',
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
 				'name'    => 'Disable On Mobile',
 				'desc'    => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
 				'id'      => $this->prefix . 'disable_on_mobile',
