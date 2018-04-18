@@ -121,6 +121,18 @@ class Smart_Overlay_Admin_Fields {
 
 		$this->smart_overlay_fields->add_field(
 			array(
+				'name'              => __( 'Background Color', 'smart_overlay' ),
+				'desc'              => __( 'Background color of the popup.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'background_color',
+				'type'              => 'colorpicker',
+				'options'           => array(
+					'alpha'         => true,
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
 				'name'    => __( 'Display Lightbox On', 'smart_overlay' ),
 				'desc'    => __( 'Select page(s) on which to show this overlay.', 'smart_overlay' ),
 				'id'      => $this->prefix . 'display_lightbox_on',
@@ -318,6 +330,18 @@ class Smart_Overlay_Admin_Fields {
 				'id'      => $this->prefix . 'disable_on_mobile',
 				'type'    => 'checkbox',
 				'default' => $this->smart_overlay_set_checkbox_default_for_new_post( true ),
+			)
+		);
+
+		$this->smart_overlay_mask_fields->add_field(
+			array(
+				'name'              => __( 'Background Color', 'smart_overlay' ),
+				'desc'              => __( 'Background color of the overlay behind the popup.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'background_color_mask',
+				'type'              => 'colorpicker',
+				'options'           => array(
+					'alpha'         => true,
+				),
 			)
 		);
 

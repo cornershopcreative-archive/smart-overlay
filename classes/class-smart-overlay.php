@@ -71,9 +71,12 @@ class Smart_Overlay {
 				'border_radius'	=> 'border-radius',
 				'border_color'	=> 'border-color',
 				'opacity'		=> 'opacity',
+				'background_color' => 'background-color',
 			];
 
-		$this->modal_outer_style_properties = [];
+		$this->modal_outer_style_properties = [
+			'background_color_mask' => 'background-color',
+		];
 
 		$this->smart_overlay_config = new stdClass();
 		$this->smart_overlay_post_query();
@@ -270,7 +273,7 @@ class Smart_Overlay {
 			);
 
 			// Check if any styles were set, if so print them on the page.
-			if ( ! $this->modal_inner_has_set_style_properties  || ! $this->modal_outer_has_set_style_properties ) {
+			if ( false != $this->modal_inner_has_set_style_properties || false != $this->modal_outer_has_set_style_properties ) {
 				wp_add_inline_style( 'smart-overlay', $this->modal_styles_output );
 			}
 		}//end if
@@ -503,7 +506,7 @@ class Smart_Overlay {
 				}
 			} else {
 				// Check if we should append pixels
-				if ( in_array( $style_property, [ 'border-color', 'opacity' ] ) ) {
+				if ( in_array( $style_property, [ 'border-color', 'opacity', 'background-color' ] ) ) {
 					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . ';' . "\n";
 				} else {
 					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
@@ -516,7 +519,7 @@ class Smart_Overlay {
 			$this->modal_styles_output .= "\t\tborder-style:solid;\n";
 		}
 
-		$this->modal_styles_output .= "\t}";
+		$this->modal_styles_output .= "\t}" . PHP_EOL;
 	}
 
 	/**
