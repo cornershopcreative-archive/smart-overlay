@@ -499,6 +499,11 @@ class Smart_Overlay {
 		return $messages;
 	}
 
+	/**
+	 * Check if a post is being edited to load some styles
+	 *
+	 * @param string $hook the current page of the admin
+	 */
 	public function smart_overlay_admin_scripts( $hook ) {
 		if( 'post.php' != $hook ) {
 			return;
