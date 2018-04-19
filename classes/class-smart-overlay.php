@@ -553,7 +553,7 @@ class Smart_Overlay {
 		// Use the existing `update` message for posts.
 		// Otherwise we have to define all 10 messages for the smart_overlay post type.
 		// i.e., $message['smart_overlay'][1], $message['smart_overlay'][2] ...
-		$messages['post'][1] = __( 'Post updated. Please clear your cache.', 'smart_overlay' );
+		$messages['post'][1] = __( 'Post updated. Please clear your cache to see your changes.', 'smart_overlay' );
 
 		return $messages;
 	}
