@@ -3,9 +3,9 @@
  * Create the custom post type, load dependencies and add hooks
  * PHP Version 5
  *
- * @since   0.5.5
+ * @since 0.5.5
  * @package Smart_Overlay
- * @author  Cornershop Creative <devs@cshp.co>
+ * @author Cornershop Creative <devs@cshp.co>
  */
 
 if ( ! defined( 'WPINC' ) ) {
@@ -16,13 +16,43 @@ class Smart_Overlay {
 
 
 	/**
-	 * @var Holds standard class
+	 * Configuration object for the current popup
+	 *
+	 * @var StdClass
 	 */
 	private $smart_overlay_config;
 
+	/**
+	 * Inline styles for the modal window
+	 *
+	 * @var string
+	 */
+	private $modal_outer_style;
+
+	/**
+	 * All of the available CSS styles
+	 *
+	 * @var array
+	 */
+	private $modal_style_properties = [
+		'max_width' => 'max-width',
+		'max_height' => 'max-height',
+		'min_height' => 'min-height',
+	];
+
+	/**
+	 * All of the CSS Styles the user set
+	 *
+	 * @var array
+	 */
+	private $modal_set_style_properties = [];
+
+	/**
+	 * Assign a stdClass to the config property, query all of the smart popups and load dependencies
+	 */
 	public function __construct() {
 		$this->smart_overlay_config = new stdClass();
-		$this->set_smart_overlay_variables();
+		$this->smart_overlay_post_query();
 		$this->load_dependencies();
 	}
 
@@ -31,12 +61,16 @@ class Smart_Overlay {
 	 */
 	public function init() {
 		add_action( 'init', array( $this, 'smart_overlay_post_type' ), 10 );
+
 		add_action( 'manage_smart_overlay_posts_custom_column', array( $this, 'smart_overlay_custom_columns' ), 10, 2 );
 		add_filter( 'manage_smart_overlay_posts_columns', array( $this, 'smart_overlay_add_columns' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_js' ) );
-		add_action( 'init', array( $this, 'set_smart_overlay_variables' ) );
-		add_action( 'wp_head', array( $this, 'smart_overlay_js_config' ) );
+
+		add_action( 'wp', array( $this, 'smart_overlay_post_loop' ), 15 );
+		add_action( 'wp', array( $this, 'smart_overlay_get_set_styles' ), 50 );
+		add_action( 'wp', array( $this, 'smart_overlay_set_js_options' ), 30 );
+
 		add_action( 'wp_footer', array( $this, 'smart_overlay_footer' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'smart_overlay_assets' ) );
 		add_action( 'admin_notices', array( $this, 'smart_overlay_admin_notices' ) );
 	}
 
@@ -57,8 +91,15 @@ class Smart_Overlay {
 			include_once dirname( __DIR__ ) . '/includes/CMB2-conditionals/cmb2-conditionals.php';
 		}
 
+		// Include CMB2 Custom Fields
+		include_once dirname( __FILE__ ) . '/class-smart-overlay-custom-fields.php';
+
 		// Include CMB2 configuration
 		include_once dirname( __FILE__ ) . '/class-smart-overlay-admin-fields.php';
+
+		// Initialize CMB2 Custom FIelds
+		$fields = new Smart_Overlay_Custom_Fields();
+		$fields->init();
 
 		// Initialize CMB2 configuration
 		$fields = new Smart_Overlay_Admin_Fields();
@@ -178,7 +219,7 @@ class Smart_Overlay {
 	 * Load up our JS
 	 * We don't inline our JS because we need jQuery dependency
 	 */
-	public function smart_overlay_js() {
+	public function smart_overlay_assets() {
 
 		if ( ! is_admin() ) {
 			wp_enqueue_script(
@@ -188,16 +229,32 @@ class Smart_Overlay {
 				SMART_OVERLAY_VERSION,
 				true
 			);
-		}
 
+			// Check if we should add our JS
+			if ( $this->smart_overlay_config->display_filter ) {
+				wp_add_inline_script( 'smart-overlay-js', 'window.smart_overlay_opts = ' . wp_json_encode( $this->smart_overlay_config->js_config ) . ';' );
+			}
+
+			wp_enqueue_style(
+				'smart-overlay',
+				plugins_url( '/assets/smart-overlay.css', dirname( __FILE__ ) ),
+				'',
+				SMART_OVERLAY_VERSION
+			);
+
+			// Check if any styles were set, if so print them on the page.
+			if ( ! empty( $this->modal_set_style_properties ) ) {
+				wp_add_inline_style( 'smart-overlay', $this->modal_outer_style );
+			}
+		}//end if
 	}
 
 
 
 	/**
-	 * Built the config object.
+	 * Perform the query for Smart Overlays. Also sets some config properties
 	 */
-	public function set_smart_overlay_variables() {
+	public function smart_overlay_post_query() {
 		$this->smart_overlay_config->current_id = '';
 		$this->smart_overlay_config->prefix = apply_filters( 'smart_overlay_prefix', 'smart_overlay_' );
 
@@ -221,64 +278,107 @@ class Smart_Overlay {
 
 
 	/**
-	 * Based on the current page/thing being displayed, and the overlays available, output into the page <head>
-	 * a JS object with the appropriate overlay settings.
+	 * Loop through Smart Overlays to find one to display
 	 */
-	public function smart_overlay_js_config() {
-
+	public function smart_overlay_post_loop() {
 		// Obviously we can only do this if there are some overlay posts defined...
 		if ( $this->smart_overlay_config->overlays->have_posts() ) :
 			while ( $this->smart_overlay_config->overlays->have_posts() ) :
 
 				$this->smart_overlay_config->overlays->the_post();
 
-				// Get the meta values from the current overlay.
-				$smart_overlay_id  = get_the_ID();
-				$display_filter    = get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
-				$disable_on_mobile = get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'disable_on_mobile', 1 );
+				$id = get_the_ID();
 
-				// Prepare our config object
-				$config = array(
-					'background' => get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'bg_image' )[0],
-					'context'    => $display_filter,
-					'suppress'   => get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'suppress' )[0],
-					'trigger'    => get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'trigger' )[0],
-					'amount'     => get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'trigger_amount' )[0],
-					'maxWidth'   => get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'max_width' )[0],
-					'id'         => sanitize_title_with_dashes( get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'overlay_identifier' )[0] ),
-					'onMobile'   => ! $disable_on_mobile,
-				);
-
-				$script_tag = '<script id="smart-overlay-options">window.smart_overlay_opts = ' . wp_json_encode( $config ) . ';</script>';
-
-				if ( 'all' === $display_filter
-					|| ( is_front_page() && 'home' === $display_filter )
-					|| ( ! is_front_page() && 'all_but_homepage' === $display_filter )
-				) {
-
-					echo wp_kses(
-						$script_tag, [
-							'script' => [
-								'id' => [],
-							],
-						]
-					);
-
-					$this->smart_overlay_config->current_id = $smart_overlay_id;
-
-					// Once we get a single smart overlay, we can stop.
+				// If we found an overlay to display, keep the overlay's ID, check its mobile display and break the loop
+				if ( $this->smart_overlay_maybe_display( $id ) ) {
+					$this->smart_overlay_maybe_mobile_display( $id );
+					$this->smart_overlay_config->current_id = $id;
 					break;
-
-				}//end if
+				}
 
 			endwhile;
 		endif;
 
 		wp_reset_postdata();
-		wp_reset_query();
 	}
 
+	/**
+	 * Checks a Smart Overlay's Meta to determine if it shows on the current page.
+	 *
+	 * @param int $smart_overlay_id ID for a Smart Overlay Post.
+	 *
+	 * @return bool
+	 */
+	public function smart_overlay_maybe_display( $smart_overlay_id ) {
+		// Get the meta to know which page to display this popup on
+		$meta = get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'display_lightbox_on', true );
 
+		// Does this meta value match the current page?
+		if ( $this->smart_overlay_check_display( $meta ) ) {
+			$this->smart_overlay_config->display_filter = true;
+
+			// Minor cleanup
+			unset( $meta );
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Set the mobile display option for an overlay. This method only runs when the correct overlay is found
+	 *
+	 * @param int $smart_overlay_id ID for a Smart Overlay Post.
+	 */
+	public function smart_overlay_maybe_mobile_display( $smart_overlay_id ) {
+		$meta = get_post_meta( $smart_overlay_id, $this->smart_overlay_config->prefix . 'disable_on_mobile', true );
+		$this->smart_overlay_config->disable_on_mobile = $meta;
+		unset( $meta );
+	}
+
+	/**
+	 * Helper function that compares the display_lightbox_on meta value
+	 *
+	 * @param string $meta The Meta key for `this->smart_overlay_config->prefix . display_lightbox_on` has only
+	 * 3 possible values to determine which page a smart overlay should display on.
+	 * @return bool
+	 */
+	public function smart_overlay_check_display( $meta ) {
+		if ( 'all' === $meta || is_front_page() && 'home' === $meta || ! is_front_page() && 'all_but_homepage' === $meta ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Set up the JS Config object
+	 */
+	public function smart_overlay_set_js_options() {
+
+		// Hold all the meta Keys for the JS Object
+		$metas = [ 'bg_image', 'suppress', 'trigger', 'trigger_amount', 'max_width', 'overlay_identifier' ];
+
+		// Prepare
+		$this->smart_overlay_config->js_config = array(
+			'context'    => $this->smart_overlay_config->display_filter,
+			'onMobile'   => ! $this->smart_overlay_config->disable_on_mobile,
+		);
+
+		foreach ( $metas as $meta_key ) {
+			$meta = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . $meta_key, true );
+
+			if ( ! empty( $meta ) ) {
+
+				// Grrr the bg_image meta is named `background` in the JS object
+				if ( 'bg_image' === $meta_key ) {
+					$meta_key = 'background';
+				}
+
+				$this->smart_overlay_config->js_config[ $meta_key ] = $meta;
+			}
+		}
+	}
 
 	/**
 	 * Output the actual overlays contents chosen for this page into the footer.
@@ -290,17 +390,61 @@ class Smart_Overlay {
 		}
 
 		// Variables for the modal template
-		$display_filter = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'display_lightbox_on' )[0];
-		$max_width      = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . 'max_width' )[0];
-		$content        = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
-		$inner_style     = ( $max_width ) ? ' style="max-width:' . $max_width . 'px;"' : '';
-
+		$content  = apply_filters( 'the_content', get_post_field( 'post_content', $this->smart_overlay_config->current_id ) );
 
 		// Load the modal markup
-		include_once dirname(__DIR__) . '/templates/modal.php';
+		include_once dirname( __DIR__ ) . '/templates/modal.php';
 	}
 
+	/**
+	 * Loop through the preset CSS Rules to check if there's post_meta for it
+	 */
+	public function smart_overlay_get_set_styles() {
 
+		foreach ( $this->modal_style_properties as $modal_style_property_meta_key => $modal_style_property ) {
+			$property_meta = get_post_meta( $this->smart_overlay_config->current_id, $this->smart_overlay_config->prefix . $modal_style_property_meta_key , true );
+
+			// If there is meta, i.e., the user set a css property, add it to an array
+			if ( ! empty( $property_meta ) ) {
+
+				// Skip any property that are empty arrays
+				if ( is_array( $property_meta ) && '' === $property_meta['dimension_value'] ) {
+					continue;
+				}
+				$this->modal_set_style_properties[ $modal_style_property ] = $property_meta;
+			}
+		}
+
+		// We have CSS. Assemble the styles.
+		if ( $this->modal_set_style_properties ) {
+			$this->smart_overlay_assemble_styles();
+			return;
+		}
+
+		// This property gets checked if its empty or not inside of the smart_overlay_assets method
+		unset( $this->modal_set_style_properties );
+	}
+
+	/**
+	 * Assemble a string of CSS rules for use inside of a style tag
+	 */
+	public function smart_overlay_assemble_styles() {
+		$this->modal_outer_style .= "\t.smart-overlay .smart-overlay-content{" . PHP_EOL;
+
+		foreach ( $this->modal_set_style_properties as $style_property => $style_value ) {
+			// Is this a single input CSS value or a dual input (one where you supply the units) ?
+			if ( is_array( $style_value ) ) {
+				// Make the value for dimensions isn't 0
+				if ( ! empty( $style_value['dimension_value'] ) ) {
+					$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value['dimension_value'] . $style_value['dimension_units'] . ';' . PHP_EOL;
+				}
+			} else {
+				$this->modal_outer_style .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
+			}
+		}
+
+		$this->modal_outer_style .= "\t}";
+	}
 
 	/**
 	 * Admin notice to explain collisions if there's more than one overlay.

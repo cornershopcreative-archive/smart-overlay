@@ -15,21 +15,27 @@ if ( ! defined( 'WPINC' ) ) {
 class Smart_Overlay_Admin_Fields {
 
 	/**
-	 * @var Holds the CMB2 fields
+	 * Holds the CMB2 fields
+	 *
+	 * @var object
 	 */
 	private $smart_overlay_fields;
 
 
 
 	/**
-	 * @var String used for CMB2
+	 * Set the post type for CMB2
+	 *
+	 * @var array
 	 */
 	private $post_type;
 
 
 
 	/**
-	 * @var String used for CMB2
+	 * Prefix for CMB2
+	 *
+	 * @var String
 	 */
 	private $prefix;
 
@@ -182,7 +188,37 @@ class Smart_Overlay_Admin_Fields {
 				'attributes'      => array(
 					'type'    => 'number',
 					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
-														'pattern' => '\d*',
+					'pattern' => '\d*',
+					'min'     => '0',
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
+				'name'            => __( 'Max Height', 'smart_overlay' ),
+				'desc'            => __( 'Maximum height of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
+				'id'              => $this->prefix . 'max_height',
+				'type'            => 'single_dimension_and_unit',
+				'attributes'      => array(
+					'type'    => 'number',
+					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
+					'pattern' => '\d*',
+					'min'     => '0',
+				),
+			)
+		);
+
+		$this->smart_overlay_fields->add_field(
+			array(
+				'name'            => __( 'Min Height', 'smart_overlay' ),
+				'desc'            => __( 'Minimum height of the lightbox displayed to users. If blank or zero, lightbox will only be as tall as content, plus any padding.', 'smart_overlay' ),
+				'id'              => $this->prefix . 'min_height',
+				'type'            => 'single_dimension_and_unit',
+				'attributes'      => array(
+					'type'    => 'number',
+					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
+					'pattern' => '\d*',
 					'min'     => '0',
 				),
 			)
@@ -209,7 +245,7 @@ class Smart_Overlay_Admin_Fields {
 	 * @return mixed          Returns true or '', the blank default.
 	 */
 	public function smart_overlay_set_checkbox_default_for_new_post( $default ) {
-		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' );
+		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' ); // WPCS: CSRF ok.
 	}
 
 
