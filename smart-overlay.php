@@ -15,7 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 
-define( 'SMART_OVERLAY_VERSION', '0.8.1' );
+define( 'SMART_OVERLAY_VERSION', '1.0' );
 
 
 require_once dirname( __FILE__ ) . '/classes/class-smart-overlay.php';

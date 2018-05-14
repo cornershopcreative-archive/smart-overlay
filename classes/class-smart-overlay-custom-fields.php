@@ -3,7 +3,7 @@
  * Configures the meta fields for the overlay options
  * PHP Version 5
  *
- * @since   0.8.2
+ * @since   1.0
  * @package Smart_Overlay
  * @author  Cornershop Creative <devs@cshp.co>
  */

@@ -3,7 +3,7 @@
  * Create the custom post type, load dependencies and add hooks
  * PHP Version 5
  *
- * @since 0.5.5
+ * @since 1.0
  * @package Smart_Overlay
  * @author Cornershop Creative <devs@cshp.co>
  */
