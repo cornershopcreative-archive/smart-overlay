@@ -320,6 +320,7 @@ class Smart_Overlay_Admin_Fields {
 					'pattern'       => '\d*',
 					'min'           => '0',
 				),
+				'default'           => 1,
 			)
 		);
 
