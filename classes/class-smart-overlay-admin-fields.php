@@ -65,19 +65,21 @@ class Smart_Overlay_Admin_Fields {
 	 * Define the custom fields for each Smart Overlay post.
 	 */
 	public function smart_overlay_custom_fields() {
+		// Set up the Display Options Box
 		$this->smart_overlay_fields = new_cmb2_box(
 			array(
 				'id'            => $this->prefix . 'options',
-				'title'         => __( 'Smart Overlay Options', 'smart_overlay' ),
+				'title'         => __( 'Smart Overlay Display Options', 'smart_overlay' ),
 				'object_types'  => $this->post_type,
 				'context'       => 'side',
 				'priority'      => 'low',
 			)
 		);
 
-		$this->smart_overlay_mask_fields = new_cmb2_box(
+		// Set up the Outer Styles Box
+		$this->smart_overlay_outer_fields = new_cmb2_box(
 			array(
-				'id'            => $this->prefix . '',
+				'id'            => $this->prefix . '_outer_styles',
 				'title'         => __( 'Smart Overlay Outer Styles', 'smart_overlay' ),
 				'object_types'  => $this->post_type,
 				'context'       => 'side',
@@ -85,6 +87,18 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
+		// Set up the Inner Styles Box
+		$this->smart_overlay_inner_fields = new_cmb2_box(
+			array(
+				'id'            => $this->prefix . '_inner_fields',
+				'title'         => __( 'Smart Overlay Inner Styles', 'smart_overlay' ),
+				'object_types'  => $this->post_type,
+				'context'       => 'side',
+				'priority'      => 'low',
+			)
+		);
+
+		// Identifier
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name' => __( 'Overlay Identifier', 'smart_overlay' ),
@@ -94,43 +108,7 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
-			array(
-				'name'    => 'Background Image',
-				'desc'    => 'Upload / Choose an image to be used for overlay background. Best size depends on your overlay’s content, but probably at least 300x300px.',
-				'id'      => $this->prefix . 'bg_image',
-				'type'    => 'file',
-				// Optional:
-				'options' => array(
-					'url' => false,
-				// Hide the text input for the url
-				),
-				'text'    => array(
-					'add_upload_file_text' => 'Add Image',
-			// Change upload button text. Default: "Add or Upload File"
-				),
-				// query_args are passed to wp.media's library query.
-				'query_args' => array(
-					'type' => array(
-						'type' => 'image',
-					),
-				// Make library only display images.
-				),
-			)
-		);
-
-		$this->smart_overlay_fields->add_field(
-			array(
-				'name'              => __( 'Background Color', 'smart_overlay' ),
-				'desc'              => __( 'Background color of the popup.', 'smart_overlay' ),
-				'id'                => $this->prefix . 'background_color',
-				'type'              => 'colorpicker',
-				'options'           => array(
-					'alpha'         => true,
-				),
-			)
-		);
-
+		// Page Display
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name'    => __( 'Display Lightbox On', 'smart_overlay' ),
@@ -146,6 +124,7 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
+		// Display Frequency
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name'    => __( 'Once Seen', 'smart_overlay' ),
@@ -163,6 +142,7 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
+		// Trigger
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name'    => __( 'Trigger', 'smart_overlay' ),
@@ -181,6 +161,7 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
+		// Trigger Amount
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name'            => __( 'Trigger Amount', 'smart_overlay' ),
@@ -201,7 +182,58 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
+		// Mobile
 		$this->smart_overlay_fields->add_field(
+			array(
+				'name'    => 'Disable On Mobile',
+				'desc'    => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
+				'id'      => $this->prefix . 'disable_on_mobile',
+				'type'    => 'checkbox',
+				'default' => $this->smart_overlay_set_checkbox_default_for_new_post( true ),
+			)
+		);
+
+		// Background Image
+		$this->smart_overlay_inner_fields->add_field(
+			array(
+				'name'    => 'Background Image',
+				'desc'    => 'Upload / Choose an image to be used for overlay background. Best size depends on your overlay’s content, but probably at least 300x300px.',
+				'id'      => $this->prefix . 'bg_image',
+				'type'    => 'file',
+				// Optional:
+				'options' => array(
+					'url' => false,
+					// Hide the text input for the url
+				),
+				'text'    => array(
+					'add_upload_file_text' => 'Add Image',
+					// Change upload button text. Default: "Add or Upload File"
+				),
+				// query_args are passed to wp.media's library query.
+				'query_args' => array(
+					'type' => array(
+						'type' => 'image',
+					),
+					// Make library only display images.
+				),
+			)
+		);
+
+		// Background Color
+		$this->smart_overlay_inner_fields->add_field(
+			array(
+				'name'              => __( 'Background Color', 'smart_overlay' ),
+				'desc'              => __( 'Background color of the popup.', 'smart_overlay' ),
+				'id'                => $this->prefix . 'background_color',
+				'type'              => 'colorpicker',
+				'options'           => array(
+					'alpha'         => true,
+				),
+			)
+		);
+
+		// Max Width
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'            => __( 'Max Width', 'smart_overlay' ),
 				'desc'            => __( 'Maximum width (in pixels) of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
@@ -218,7 +250,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
+		// Max Height
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'            => __( 'Max Height', 'smart_overlay' ),
 				'desc'            => __( 'Maximum height of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
@@ -233,7 +266,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
+		// Min Height
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'            => __( 'Min Height', 'smart_overlay' ),
 				'desc'            => __( 'Minimum height of the lightbox displayed to users. If blank or zero, lightbox will only be as tall as content, plus any padding.', 'smart_overlay' ),
@@ -248,7 +282,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
+		// Padding
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Padding', 'smart_overlay' ),
 				'desc'              => __( 'Padding (in pixels) of the lightbox.', 'smart_overlay' ),
@@ -264,7 +299,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
+		// Border Width
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Border Width', 'smart_overlay' ),
 				'desc'              => __( 'Border width (in pixels) of the lightbox.', 'smart_overlay' ),
@@ -280,7 +316,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
+		// Border Radius
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Border Radius', 'smart_overlay' ),
 				'desc'              => __( 'Border radius (in pixels) of the lightbox.', 'smart_overlay' ),
@@ -296,7 +333,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
+		// Border Color
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Border Color', 'smart_overlay' ),
 				'desc'              => __( 'Border color of the lightbox.', 'smart_overlay' ),
@@ -308,7 +346,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
+		// Opacity
+		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Opacity', 'smart_overlay' ),
 				'desc'              => __( 'The opacity of the lightbox. 0 is invisible, 1 is full color.', 'smart_overlay' ),
@@ -324,17 +363,8 @@ class Smart_Overlay_Admin_Fields {
 			)
 		);
 
-		$this->smart_overlay_fields->add_field(
-			array(
-				'name'    => 'Disable On Mobile',
-				'desc'    => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
-				'id'      => $this->prefix . 'disable_on_mobile',
-				'type'    => 'checkbox',
-				'default' => $this->smart_overlay_set_checkbox_default_for_new_post( true ),
-			)
-		);
-
-		$this->smart_overlay_mask_fields->add_field(
+		// Background Color
+		$this->smart_overlay_outer_fields->add_field(
 			array(
 				'name'              => __( 'Background Color', 'smart_overlay' ),
 				'desc'              => __( 'Background color of the overlay behind the popup.', 'smart_overlay' ),
