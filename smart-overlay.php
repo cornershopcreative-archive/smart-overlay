@@ -1,8 +1,8 @@
 <?php
 /**
-Plugin Name: Smart Overlay
+Plugin Name: Smart Popup
 Plugin URI: https://wordpress.org/plugins/smart-overlay/
-Description: Show a highly-configurable lightbox modal on your pages to encourage donations, actions. etc.
+Description: Show a highly-configurable popup for your pages to encourage donations, actions. etc.
 Version: 1.0
 Author: Cornershop Creative
 Author URI: https://cornershopcreative.com

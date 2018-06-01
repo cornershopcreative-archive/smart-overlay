@@ -69,7 +69,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_fields = new_cmb2_box(
 			array(
 				'id'            => $this->prefix . 'options',
-				'title'         => __( 'Smart Overlay Display Options', 'smart_overlay' ),
+				'title'         => __( 'Smart Popup Display Options', 'smart_overlay' ),
 				'object_types'  => $this->post_type,
 				'context'       => 'side',
 				'priority'      => 'low',
@@ -80,7 +80,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_outer_fields = new_cmb2_box(
 			array(
 				'id'            => $this->prefix . '_outer_styles',
-				'title'         => __( 'Smart Overlay Outer Styles', 'smart_overlay' ),
+				'title'         => __( 'Smart Popup Outer Styles', 'smart_overlay' ),
 				'object_types'  => $this->post_type,
 				'context'       => 'side',
 				'priority'      => 'low',
@@ -91,7 +91,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields = new_cmb2_box(
 			array(
 				'id'            => $this->prefix . '_inner_fields',
-				'title'         => __( 'Smart Overlay Inner Styles', 'smart_overlay' ),
+				'title'         => __( 'Smart Popup Inner Styles', 'smart_overlay' ),
 				'object_types'  => $this->post_type,
 				'context'       => 'side',
 				'priority'      => 'low',
@@ -101,8 +101,8 @@ class Smart_Overlay_Admin_Fields {
 		// Identifier
 		$this->smart_overlay_fields->add_field(
 			array(
-				'name' => __( 'Overlay Identifier', 'smart_overlay' ),
-				'desc' => __( 'Enter a name or number to uniquely identify this overlay. Change this when revising the overlay content to reset users’ cookies.', 'smart_overlay' ),
+				'name' => __( 'Popup Identifier', 'smart_overlay' ),
+				'desc' => __( 'Enter a name or number to uniquely identify this popup. Change this when revising the popup content to reset users’ cookies.', 'smart_overlay' ),
 				'id'   => $this->prefix . 'overlay_identifier',
 				'type' => 'text_small',
 			)
@@ -111,8 +111,8 @@ class Smart_Overlay_Admin_Fields {
 		// Page Display
 		$this->smart_overlay_fields->add_field(
 			array(
-				'name'    => __( 'Display Lightbox On', 'smart_overlay' ),
-				'desc'    => __( 'Select page(s) on which to show this overlay.', 'smart_overlay' ),
+				'name'    => __( 'Display Popup On', 'smart_overlay' ),
+				'desc'    => __( 'Select page(s) on which to show this popup.', 'smart_overlay' ),
 				'id'      => $this->prefix . 'display_lightbox_on',
 				'type'    => 'select',
 				'options' => array(
@@ -128,7 +128,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name'    => __( 'Once Seen', 'smart_overlay' ),
-				'desc'    => __( 'What should happen after a user sees this overlay?', 'smart_overlay' ),
+				'desc'    => __( 'What should happen after a user sees this popup?', 'smart_overlay' ),
 				'id'      => $this->prefix . 'suppress',
 				'type'    => 'select',
 				'options' => array(
@@ -146,7 +146,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name'    => __( 'Trigger', 'smart_overlay' ),
-				'desc'    => __( 'When does the lightbox appear?', 'smart_overlay' ),
+				'desc'    => __( 'When does the popup appear?', 'smart_overlay' ),
 				'id'      => $this->prefix . 'trigger',
 				'type'    => 'select',
 				'options' => array(
@@ -176,7 +176,7 @@ class Smart_Overlay_Admin_Fields {
 					'data-conditional-value' => wp_json_encode( array( 'delay', 'scroll', 'minutes', 'pages' ) ),
 					'type'                   => 'number',
 					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
-														'pattern'                => '\d*',
+					'pattern'                => '\d*',
 					'min'                    => '0',
 				),
 			)
@@ -186,7 +186,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_fields->add_field(
 			array(
 				'name'    => 'Disable On Mobile',
-				'desc'    => 'Check this box to suppress this overlay on mobile devices. (Recommended)',
+				'desc'    => 'Check this box to suppress this popup on mobile devices. (Recommended)',
 				'id'      => $this->prefix . 'disable_on_mobile',
 				'type'    => 'checkbox',
 				'default' => $this->smart_overlay_set_checkbox_default_for_new_post( true ),
@@ -197,7 +197,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'    => 'Background Image',
-				'desc'    => 'Upload / Choose an image to be used for overlay background. Best size depends on your overlay’s content, but probably at least 300x300px.',
+				'desc'    => 'Upload / Choose an image to be used for popup background. Best size depends on your popup’s content, but probably at least 300x300px.',
 				'id'      => $this->prefix . 'bg_image',
 				'type'    => 'file',
 				// Optional:
@@ -236,7 +236,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'            => __( 'Max Width', 'smart_overlay' ),
-				'desc'            => __( 'Maximum width (in pixels) of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
+				'desc'            => __( 'Maximum width (in pixels) of the popup displayed to users. If blank or zero, popup will stretch to accommodate content.', 'smart_overlay' ),
 				'id'              => $this->prefix . 'max_width',
 				'type'            => 'text_small',
 				'sanitization_cb' => 'smart_overlay_absint',
@@ -254,7 +254,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'            => __( 'Max Height', 'smart_overlay' ),
-				'desc'            => __( 'Maximum height of the lightbox displayed to users. If blank or zero, lightbox will stretch to accomodate content.', 'smart_overlay' ),
+				'desc'            => __( 'Maximum height of the popup displayed to users. If blank or zero, popup will stretch to accommodate content.', 'smart_overlay' ),
 				'id'              => $this->prefix . 'max_height',
 				'type'            => 'single_dimension_and_unit',
 				'attributes'      => array(
@@ -270,7 +270,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'            => __( 'Min Height', 'smart_overlay' ),
-				'desc'            => __( 'Minimum height of the lightbox displayed to users. If blank or zero, lightbox will only be as tall as content, plus any padding.', 'smart_overlay' ),
+				'desc'            => __( 'Minimum height of the popup displayed to users. If blank or zero, popup will only be as tall as content, plus any padding.', 'smart_overlay' ),
 				'id'              => $this->prefix . 'min_height',
 				'type'            => 'single_dimension_and_unit',
 				'attributes'      => array(
@@ -286,7 +286,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Padding', 'smart_overlay' ),
-				'desc'              => __( 'Padding (in pixels) of the lightbox.', 'smart_overlay' ),
+				'desc'              => __( 'Padding (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'padding',
 				'type'              => 'text_small',
 				'sanitization_cb'   => 'smart_overlay_absint',
@@ -303,7 +303,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Border Width', 'smart_overlay' ),
-				'desc'              => __( 'Border width (in pixels) of the lightbox.', 'smart_overlay' ),
+				'desc'              => __( 'Border width (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'border_width',
 				'type'              => 'text_small',
 				'sanitization_cb'   => 'smart_overlay_absint',
@@ -320,7 +320,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Border Radius', 'smart_overlay' ),
-				'desc'              => __( 'Border radius (in pixels) of the lightbox.', 'smart_overlay' ),
+				'desc'              => __( 'Border radius (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'border_radius',
 				'type'              => 'text_small',
 				'sanitization_cb'   => 'smart_overlay_absint',
@@ -337,7 +337,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Border Color', 'smart_overlay' ),
-				'desc'              => __( 'Border color of the lightbox.', 'smart_overlay' ),
+				'desc'              => __( 'Border color of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'border_color',
 				'type'              => 'colorpicker',
 				'options'           => array(
@@ -350,7 +350,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_inner_fields->add_field(
 			array(
 				'name'              => __( 'Opacity', 'smart_overlay' ),
-				'desc'              => __( 'The opacity of the lightbox. 0 is invisible, 1 is full color.', 'smart_overlay' ),
+				'desc'              => __( 'The opacity of the popup. 0 is invisible, 1 is full color.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'opacity',
 				'type'              => 'range_slider',
 				'sanitization_cb'   => 'smart_overlay_absint',
