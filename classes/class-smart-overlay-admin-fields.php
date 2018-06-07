@@ -12,16 +12,37 @@ if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not allowed' );
 }
 
+/**
+ * Sets all of standard CMB2 fields for the popup
+ *
+ * Class Smart_Overlay_Admin_Fields
+ */
 class Smart_Overlay_Admin_Fields {
 
 	/**
-	 * Holds the CMB2 fields
+	 * Holds the all the non-style fields
 	 *
 	 * @var object
 	 */
 	private $smart_overlay_fields;
 
-	private $smart_overlay_mask_fields;
+
+
+	/**
+	 * Holds all the fields for the popup mask styles
+	 *
+	 * @var object
+	 */
+	private $smart_overlay_outer_fields;
+
+
+
+	/**
+	 * Holds all the fields for the popup styles
+	 *
+	 * @var object
+	 */
+	private $smart_overlay_inner_fields;
 
 
 
@@ -367,7 +388,7 @@ class Smart_Overlay_Admin_Fields {
 		$this->smart_overlay_outer_fields->add_field(
 			array(
 				'name'              => __( 'Background Color', 'smart_overlay' ),
-				'desc'              => __( 'Background color of the overlay behind the popup.', 'smart_overlay' ),
+				'desc'              => __( 'Background color of the mask behind the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'background_color_mask',
 				'type'              => 'colorpicker',
 				'options'           => array(
@@ -387,7 +408,8 @@ class Smart_Overlay_Admin_Fields {
 	 * @return mixed          Returns true or '', the blank default.
 	 */
 	public function smart_overlay_set_checkbox_default_for_new_post( $default ) {
-		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' ); // WPCS: CSRF ok.
+		// phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' );
 	}
 
 

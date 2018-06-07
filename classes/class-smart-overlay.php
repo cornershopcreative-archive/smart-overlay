@@ -12,6 +12,11 @@ if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not allowed' );
 }
 
+/**
+ * Performs 95% of the plugin functionality.
+ *
+ * Class Smart_Overlay
+ */
 class Smart_Overlay {
 
 
@@ -63,16 +68,16 @@ class Smart_Overlay {
 	 */
 	public function __construct() {
 		$this->modal_inner_style_properties = [
-				'max_width' 	=> 'max-width',
-				'max_height' 	=> 'max-height',
-				'min_height' 	=> 'min-height',
-				'padding'		=> 'padding',
-				'border_width'	=> 'border-width',
-				'border_radius'	=> 'border-radius',
-				'border_color'	=> 'border-color',
-				'opacity'		=> 'opacity',
-				'background_color' => 'background-color',
-			];
+			'max_width'        => 'max-width',
+			'max_height'       => 'max-height',
+			'min_height'       => 'min-height',
+			'padding'          => 'padding',
+			'border_width'     => 'border-width',
+			'border_radius'    => 'border-radius',
+			'border_color'     => 'border-color',
+			'opacity'          => 'opacity',
+			'background_color' => 'background-color',
+		];
 
 		$this->modal_outer_style_properties = [
 			'background_color_mask' => 'background-color',
@@ -205,6 +210,7 @@ class Smart_Overlay {
 					'all_but_homepage' => __( 'All But Homepage', 'smart_overlay' ),
 					'none'             => __( 'Nowhere (disabled)', 'smart_overlay' ),
 				);
+				// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 				esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 				break;
 
@@ -213,13 +219,18 @@ class Smart_Overlay {
 				$amount = get_post_meta( $post_id, 'smart_overlay_trigger_amount', true );
 				$display_options = array(
 					'immediate'   => __( 'Immediately on page load', 'smart_overlay' ),
+					// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 					'delay'       => __( sprintf( '%s seconds after load', $amount ), 'smart_overlay' ),
+					// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 					'scroll'      => __( sprintf( 'After page is scrolled %s pixels', $amount ), 'smart_overlay' ),
 					'scroll-half' => __( 'After page is scrolled halfway', 'smart_overlay' ),
 					'scroll-full' => __( 'At bottom of page', 'smart_overlay' ),
+					// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 					'minutes'     => __( sprintf( 'After %s minutes spent on site this visit', $amount ), 'smart_overlay' ),
+					// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 					'pages'       => __( sprintf( 'Once %s pages have been visited in last 90 days', $amount ), 'smart_overlay' ),
 				);
+				// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 				esc_html_e( $display_options[ get_post_meta( $post_id, $field, true ) ], 'smart_overlay' );
 				break;
 
@@ -273,7 +284,7 @@ class Smart_Overlay {
 			);
 
 			// Check if any styles were set, if so print them on the page.
-			if ( false != $this->modal_inner_has_set_style_properties || false != $this->modal_outer_has_set_style_properties ) {
+			if ( false !== $this->modal_inner_has_set_style_properties || false !== $this->modal_outer_has_set_style_properties ) {
 				wp_add_inline_style( 'smart-overlay', $this->modal_styles_output );
 			}
 		}//end if
@@ -465,7 +476,7 @@ class Smart_Overlay {
 	/**
 	 * Helper function for getting CSS out of post meta
 	 *
-	 * @param array $properties an array of possible CSS properties that could be set
+	 * @param array $properties an array of possible CSS properties that could be set.
 	 *
 	 * @return bool|array $style returns false if no CSS properties are set in the post meta
 	 */
@@ -491,11 +502,11 @@ class Smart_Overlay {
 	/**
 	 * Assemble a string of CSS rules for use inside of a style tag
 	 *
-	 * @param array $properties array of CSS properties
-	 * @param string $selector the CSS selector to apply these styles to
+	 * @param array  $properties array of CSS properties.
+	 * @param string $selector the CSS selector to apply these styles to.
 	 */
 	public function smart_overlay_assemble_styles( $properties, $selector = '.smart-overlay' ) {
-		$this->modal_styles_output .= "\t" . $selector . "{" . PHP_EOL;
+		$this->modal_styles_output .= "\t" . $selector . '{' . PHP_EOL;
 
 		foreach ( $properties as $style_property => $style_value ) {
 			// Is this a single input CSS value or a dual input (one where you supply the units) ?
@@ -506,7 +517,7 @@ class Smart_Overlay {
 				}
 			} else {
 				// Check if we should append pixels
-				if ( in_array( $style_property, [ 'border-color', 'opacity', 'background-color' ] ) ) {
+				if ( in_array( $style_property, [ 'border-color', 'opacity', 'background-color' ], true ) ) {
 					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . ';' . "\n";
 				} else {
 					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
@@ -540,13 +551,19 @@ class Smart_Overlay {
 	}
 
 
-	// Displays an admin notice when a smart overlay post is updated.
+	/**
+	 * Displays an admin notice when a smart overlay post is updated.
+	 *
+	 * @param array $messages holds all of the WP admin Messages.
+	 *
+	 * @return mixed
+	 */
 	public function smart_overlay_cache_admin_notice( $messages ) {
 		$post = get_post();
 		$post_type = get_post_type( $post );
 
 		// If we are editing another type of post, return the default messages
-		if( 'smart_overlay' != $post_type ) {
+		if ( 'smart_overlay' !== $post_type ) {
 			return $messages;
 		}
 
@@ -561,10 +578,10 @@ class Smart_Overlay {
 	/**
 	 * Check if a post is being edited to load some styles
 	 *
-	 * @param string $hook the current page of the admin
+	 * @param string $hook the current page of the admin.
 	 */
 	public function smart_overlay_admin_scripts( $hook ) {
-		if( 'post.php' != $hook ) {
+		if ( 'post.php' !== $hook ) {
 			return;
 		}
 		wp_enqueue_style( 'admin-styles', plugins_url( '/assets/smart-overlay-admin.css', dirname( __FILE__ ) ) );

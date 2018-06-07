@@ -12,6 +12,11 @@ if ( ! defined( 'WPINC' ) ) {
 	die( 'Direct access not allowed' );
 }
 
+/**
+ * Sets all of custom CMB2 fields for the popup
+ *
+ * Class Smart_Overlay_Custom_Fields
+ */
 class Smart_Overlay_Custom_Fields {
 
 	/**
@@ -50,33 +55,37 @@ class Smart_Overlay_Custom_Fields {
 			)
 		);
 	?>
-		<div class="alignleft"><p><label for="<?php echo $field_type->_id( 'dimension_value' ); // WPCS: XSS ok; ?>">Value</label></p>
+		<div class="alignleft"><p><label for="<?php echo $field_type->_id( 'dimension_value' ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped ?>">Value</label></p>
 			<?php
-			echo $field_type->input(
+			$field_input = $field_type->input(
 				array(
-					'name'  => $field_type->_name( '[dimension_value]' ), // WPCS: XSS ok;
-					'id'    => $field_type->_id( '_dimension_value' ), // WPCS: XSS ok;
-					'value' => $value['dimension_value'], // WPCS: XSS ok;
+					'name'  => $field_type->_name( '[dimension_value]' ),
+					'id'    => $field_type->_id( '_dimension_value' ),
+					'value' => $value['dimension_value'],
 					'desc'  => '',
 				)
-			); // WPCS: XSS ok;
+			);
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			echo $field_input;
 			?>
 		</div>
-		<div class="alignleft"><p><label for="<?php echo $field_type->_id( 'dimension_units' ); // WPCS: XSS ok; ?>">Units</label></p>
+		<div class="alignleft"><p><label for="<?php echo $field_type->_id( 'dimension_units' ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped ?>">Units</label></p>
 			<?php
-			echo $field_type->select(
+			$field_input = $field_type->select(
 				array(
-					'name'  => $field_type->_name( '[dimension_units]' ), // WPCS: XSS ok;
-					'id'    => $field_type->_id( '_dimension_units' ), // WPCS: XSS ok;
-					'value' => $value['dimension_units'], // WPCS: XSS ok;
-					'options' => $this->cmb2_unit_options( $value['dimension_units'] ), // WPCS: XSS ok;
+					'name'  => $field_type->_name( '[dimension_units]' ),
+					'id'    => $field_type->_id( '_dimension_units' ),
+					'value' => $value['dimension_units'],
+					'options' => $this->cmb2_unit_options( $value['dimension_units'] ),
 					'desc'  => '',
 				)
-			); // WPCS: XSS ok;
+			);
+			// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			echo $field_input;
 			?>
 		</div>
 		<br class="clear">
-		<?php echo $field_type->_desc( true ); // WPCS: XSS ok; ?>
+		<?php echo $field_type->_desc( true ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped ?>
 
 	<?php
 	}
@@ -92,7 +101,17 @@ class Smart_Overlay_Custom_Fields {
 	 */
 	public function cmb2_render_range_slider_cb( $field, $escaped_value, $object_id, $object_type, $field_type_object ) {
 		echo '<div class="range-slider">';
-		echo $field_type_object->input( array( 'type' => 'range', 'min' => '0', 'max' => '1', 'step' => '0.1', 'class' => 'range-slider__range' ) );
+		$field_input = $field_type_object->input(
+			array(
+				'type' => 'range',
+				'min' => '0',
+				'max' => '1',
+				'step' => '0.1',
+				'class' => 'range-slider__range',
+			)
+		);
+		// phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+		echo $field_input;
 		echo '<span class="range-slider__value">0</span>';
 		echo '</div>';
 	}
@@ -202,7 +221,7 @@ class Smart_Overlay_Custom_Fields {
 					// Check for errors
 					if ( $first_error_row ) {
 						evt.preventDefault();
-						alert( '<?php _e( 'The max height cannot be less than the minimum height.', 'smart_overlay' ); // PHPCS: XSS ok. ?> ');
+						alert( '<?php _e( 'The max height cannot be less than the minimum height.', 'smart_overlay' ); // phpcs:ignore WordPress.XSS.EscapeOutput.UnsafePrintingFunction ?> ');
 						$htmlbody.animate({
 							scrollTop: ( $first_error_row.offset().top - 200 )
 						}, 1000);
@@ -219,7 +238,7 @@ class Smart_Overlay_Custom_Fields {
 		static $added = false;
 		// Only add this to the page once (not for every metabox)
 		if ( $added ) {
-		   return;
+			return;
 		}
 		$added = true;
 		?>
