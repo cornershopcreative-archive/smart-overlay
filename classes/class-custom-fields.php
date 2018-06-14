@@ -4,7 +4,7 @@
  * PHP Version 5
  *
  * @since   1.0
- * @package Smart_Overlay
+ * @package Smart_Popup
  * @author  Cornershop Creative <devs@cshp.co>
  */
 
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * Class Smart_Overlay_Custom_Fields
  */
-class Smart_Overlay_Custom_Fields {
+class Custom_Fields {
 
 	/**
 	 * All of the values for dimension units.

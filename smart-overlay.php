@@ -15,17 +15,18 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 
-define( 'SMART_OVERLAY_VERSION', '1.0' );
+define( 'SMART_POPUP_VERSION', '1.0' );
 
 
-require_once dirname( __FILE__ ) . '/classes/class-smart-overlay.php';
+
+require_once dirname( __FILE__ ) . '/classes/class-smart-popup.php';
 
 
 /**
  * Kick things off by hooking into `plugins_loaded`
  */
 function run_smart_overlay() {
-	$smart_overlay_plugin = new Smart_Overlay();
+	$smart_overlay_plugin = new Smart_Popup();
 	$smart_overlay_plugin->init();
 }
 add_action( 'plugins_loaded', 'run_smart_overlay' );

@@ -4,7 +4,7 @@
  * PHP Version 5
  *
  * @since   1.0
- * @package Smart_Overlay
+ * @package Smart_Popup
  * @author  Cornershop Creative <devs@cshp.co>
  */
 
@@ -17,14 +17,14 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * Class Smart_Overlay_Admin_Fields
  */
-class Smart_Overlay_Admin_Fields {
+class Admin_Fields {
 
 	/**
 	 * Holds the all the non-style fields
 	 *
 	 * @var object
 	 */
-	private $smart_overlay_fields;
+	private $config_fields;
 
 
 
@@ -33,7 +33,7 @@ class Smart_Overlay_Admin_Fields {
 	 *
 	 * @var object
 	 */
-	private $smart_overlay_outer_fields;
+	private $outer_style_fields;
 
 
 
@@ -42,7 +42,7 @@ class Smart_Overlay_Admin_Fields {
 	 *
 	 * @var object
 	 */
-	private $smart_overlay_inner_fields;
+	private $inner_style_fields;
 
 
 
@@ -77,7 +77,7 @@ class Smart_Overlay_Admin_Fields {
 	 * Initialize hooks
 	 */
 	public function init() {
-		add_action( 'cmb2_admin_init', array( $this, 'smart_overlay_custom_fields' ) );
+		add_action( 'cmb2_admin_init', array( $this, 'setup_CMB2_fields' ) );
 	}
 
 
@@ -85,9 +85,9 @@ class Smart_Overlay_Admin_Fields {
 	/**
 	 * Define the custom fields for each Smart Overlay post.
 	 */
-	public function smart_overlay_custom_fields() {
+	public function setup_CMB2_fields() {
 		// Set up the Display Options Box
-		$this->smart_overlay_fields = new_cmb2_box(
+		$this->config_fields = new_cmb2_box(
 			array(
 				'id'            => $this->prefix . 'options',
 				'title'         => __( 'Smart Popup Display Options', 'smart_overlay' ),
@@ -98,7 +98,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Set up the Outer Styles Box
-		$this->smart_overlay_outer_fields = new_cmb2_box(
+		$this->outer_style_fields = new_cmb2_box(
 			array(
 				'id'            => $this->prefix . '_outer_styles',
 				'title'         => __( 'Smart Popup Outer Styles', 'smart_overlay' ),
@@ -109,7 +109,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Set up the Inner Styles Box
-		$this->smart_overlay_inner_fields = new_cmb2_box(
+		$this->inner_style_fields = new_cmb2_box(
 			array(
 				'id'            => $this->prefix . '_inner_fields',
 				'title'         => __( 'Smart Popup Inner Styles', 'smart_overlay' ),
@@ -120,7 +120,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Identifier
-		$this->smart_overlay_fields->add_field(
+		$this->config_fields->add_field(
 			array(
 				'name' => __( 'Popup Identifier', 'smart_overlay' ),
 				'desc' => __( 'Enter a name or number to uniquely identify this popup. Change this when revising the popup content to reset users’ cookies.', 'smart_overlay' ),
@@ -130,7 +130,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Page Display
-		$this->smart_overlay_fields->add_field(
+		$this->config_fields->add_field(
 			array(
 				'name'    => __( 'Display Popup On', 'smart_overlay' ),
 				'desc'    => __( 'Select page(s) on which to show this popup.', 'smart_overlay' ),
@@ -146,7 +146,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Display Frequency
-		$this->smart_overlay_fields->add_field(
+		$this->config_fields->add_field(
 			array(
 				'name'    => __( 'Once Seen', 'smart_overlay' ),
 				'desc'    => __( 'What should happen after a user sees this popup?', 'smart_overlay' ),
@@ -164,7 +164,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Trigger
-		$this->smart_overlay_fields->add_field(
+		$this->config_fields->add_field(
 			array(
 				'name'    => __( 'Trigger', 'smart_overlay' ),
 				'desc'    => __( 'When does the popup appear?', 'smart_overlay' ),
@@ -177,13 +177,13 @@ class Smart_Overlay_Admin_Fields {
 					'scroll-half' => __( 'After page is scrolled halfway', 'smart_overlay' ),
 					'scroll-full' => __( 'After page is scrolled to bottom', 'smart_overlay' ),
 					'minutes'     => __( 'After N minutes spent on site this visit (specify)', 'smart_overlay' ),
-					'pages'       => __( 'Once N pages have been visited in last 90 days (specify)', 'cmb2' ),
+					'pages'       => __( 'Once N pages have been visited in last 90 days (specify)', 'smart_overlay' ),
 				),
 			)
 		);
 
 		// Trigger Amount
-		$this->smart_overlay_fields->add_field(
+		$this->config_fields->add_field(
 			array(
 				'name'            => __( 'Trigger Amount', 'smart_overlay' ),
 				'desc'            => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger.', 'smart_overlay' ),
@@ -204,18 +204,18 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Mobile
-		$this->smart_overlay_fields->add_field(
+		$this->config_fields->add_field(
 			array(
 				'name'    => 'Disable On Mobile',
 				'desc'    => 'Check this box to suppress this popup on mobile devices. (Recommended)',
 				'id'      => $this->prefix . 'disable_on_mobile',
 				'type'    => 'checkbox',
-				'default' => $this->smart_overlay_set_checkbox_default_for_new_post( true ),
+				'default' => $this->set_checkbox_default_for_new_post( true ),
 			)
 		);
 
 		// Background Image
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'    => 'Background Image',
 				'desc'    => 'Upload / Choose an image to be used for popup background. Best size depends on your popup’s content, but probably at least 300x300px.',
@@ -241,7 +241,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Background Color
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'              => __( 'Background Color', 'smart_overlay' ),
 				'desc'              => __( 'Background color of the popup.', 'smart_overlay' ),
@@ -254,7 +254,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Max Width
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'            => __( 'Max Width', 'smart_overlay' ),
 				'desc'            => __( 'Maximum width (in pixels) of the popup displayed to users. If blank or zero, popup will stretch to accommodate content.', 'smart_overlay' ),
@@ -272,7 +272,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Max Height
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'            => __( 'Max Height', 'smart_overlay' ),
 				'desc'            => __( 'Maximum height of the popup displayed to users. If blank or zero, popup will stretch to accommodate content.', 'smart_overlay' ),
@@ -288,7 +288,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Min Height
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'            => __( 'Min Height', 'smart_overlay' ),
 				'desc'            => __( 'Minimum height of the popup displayed to users. If blank or zero, popup will only be as tall as content, plus any padding.', 'smart_overlay' ),
@@ -304,7 +304,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Padding
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'              => __( 'Padding', 'smart_overlay' ),
 				'desc'              => __( 'Padding (in pixels) of the popup.', 'smart_overlay' ),
@@ -321,7 +321,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Border Width
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'              => __( 'Border Width', 'smart_overlay' ),
 				'desc'              => __( 'Border width (in pixels) of the popup.', 'smart_overlay' ),
@@ -338,7 +338,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Border Radius
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'              => __( 'Border Radius', 'smart_overlay' ),
 				'desc'              => __( 'Border radius (in pixels) of the popup.', 'smart_overlay' ),
@@ -355,7 +355,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Border Color
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'              => __( 'Border Color', 'smart_overlay' ),
 				'desc'              => __( 'Border color of the popup.', 'smart_overlay' ),
@@ -368,7 +368,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Opacity
-		$this->smart_overlay_inner_fields->add_field(
+		$this->inner_style_fields->add_field(
 			array(
 				'name'              => __( 'Opacity', 'smart_overlay' ),
 				'desc'              => __( 'The opacity of the popup. 0 is invisible, 1 is full color.', 'smart_overlay' ),
@@ -385,7 +385,7 @@ class Smart_Overlay_Admin_Fields {
 		);
 
 		// Background Color
-		$this->smart_overlay_outer_fields->add_field(
+		$this->outer_style_fields->add_field(
 			array(
 				'name'              => __( 'Background Color', 'smart_overlay' ),
 				'desc'              => __( 'Background color of the mask behind the popup.', 'smart_overlay' ),
@@ -407,7 +407,7 @@ class Smart_Overlay_Admin_Fields {
 	 * @param  bool $default On/Off (true/false).
 	 * @return mixed          Returns true or '', the blank default.
 	 */
-	public function smart_overlay_set_checkbox_default_for_new_post( $default ) {
+	public function set_checkbox_default_for_new_post( $default ) {
 		// phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		return isset( $_GET['post'] ) ? '' : ( $default ? (string) $default : '' );
 	}
@@ -418,7 +418,7 @@ class Smart_Overlay_Admin_Fields {
 	 *
 	 * @return absolute value
 	 */
-	public function smart_overlay_abs( $value ) {
+	public function abs( $value ) {
 		return abs( $value );
 	}
 
@@ -428,7 +428,7 @@ class Smart_Overlay_Admin_Fields {
 	 *
 	 * @return absolute value
 	 */
-	public function smart_overlay_absint( $value ) {
+	public function absint( $value ) {
 		return absint( $value );
 	}
 }
