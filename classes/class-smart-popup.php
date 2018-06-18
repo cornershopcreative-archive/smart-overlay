@@ -68,19 +68,69 @@ class Smart_Popup {
 	 */
 	public function __construct() {
 		$this->modal_inner_style_properties = [
-			'max_width'        => 'max-width',
-			'max_height'       => 'max-height',
-			'min_height'       => 'min-height',
-			'padding'          => 'padding',
-			'border_width'     => 'border-width',
-			'border_radius'    => 'border-radius',
-			'border_color'     => 'border-color',
-			'opacity'          => 'opacity',
-			'background_color' => 'background-color',
+			/* The Background Image is not set here, it's setup as inline JS */
+			[
+				'id' => 'max_width',
+				'property' => 'max-width',
+				// 'px' means we're "hard-coding" pixels as the units
+				'units' => 'px'
+			],
+			[
+				'id' => 'max_height',
+				'property' => 'max-height',
+				// true means the units are stored in the CMB2 field
+				'units' => true
+			],
+			[
+				'id' => 'min_height',
+				'property' => 'min-height',
+				// true means the units are stored in the CMB2 field
+				'units' => true
+			],
+			[
+				'id' => 'padding',
+				'property' => 'padding',
+				// 'px' means we're "hard-coding" pixels as the units
+				'units' => 'px'
+			],
+			[
+				'id' => 'border_width',
+				'property' => 'border-width',
+				// 'px' means we're "hard-coding" pixels as the units
+				'units' => 'px'
+			],
+			[
+				'id' => 'border_radius',
+				'property' => 'border-radius',
+				// 'px' means we're "hard-coding" pixels as the units
+				'units' => 'px'
+			],
+			[
+				'id' => 'border_color',
+				'property' => 'border-color',
+				// false means it doesn't require units like a hex
+				'units' => false
+			],
+			[
+				'id' => 'opacity',
+				'property' => 'opacity',
+				// false means it doesn't require units like a hex
+				'units' => false
+			],
+			[
+				'id' => 'background_color',
+				'property' => 'background-color',
+				// false means it doesn't require units like a hex
+				'units' => false
+			]
 		];
 
 		$this->modal_outer_style_properties = [
-			'background_color_mask' => 'background-color',
+			[
+				'id' => 'background_color_mask',
+				'property' => 'background-color',
+				'units' => false
+			]
 		];
 
 		$this->config = new stdClass();
@@ -461,7 +511,6 @@ class Smart_Popup {
 	public function get_outer_set_styles() {
 		// Call the helper function to get_post_meta(), and pass it all the possible inner styles
 		$styles = $this->get_style_metas( $this->modal_outer_style_properties );
-
 		// We have CSS. Assemble the styles.
 		if ( $styles ) {
 			$this->modal_outer_has_set_style_properties = true;
@@ -482,8 +531,9 @@ class Smart_Popup {
 	 */
 	public function get_style_metas( $properties ) {
 		$styles = false;
-		foreach ( $properties as $style_property_meta_key => $style_property ) {
-			$property_meta = get_post_meta( $this->config->current_id, $this->config->prefix . $style_property_meta_key , true );
+
+		foreach ( $properties as $style_property ) {
+			$property_meta = get_post_meta( $this->config->current_id, $this->config->prefix . $style_property['id'] , true );
 
 			// If there is meta, i.e., the user set a css property, add it to an array
 			if ( ! empty( $property_meta ) ) {
@@ -491,8 +541,34 @@ class Smart_Popup {
 				if ( is_array( $property_meta ) && '' === $property_meta['dimension_value'] ) {
 					continue;
 				}
-				// Set a an array where the css property is the key and the property value is, well, the value
-				$styles[ $style_property ] = $property_meta;
+
+				// Check if the property requires units or not (like a hexcolor)
+				switch ( $style_property['units'] ):
+					case 1:
+						// Check if the CMB2 field is one that came with a value and units or just a value
+						if( is_array( $property_meta ) ) {
+							$units = $property_meta['dimension_units'] . ';';
+							$value = $property_meta['dimension_value'];
+						} else {
+							//It's a CMB2 field that came with just a value (probably a legacy field that was for pixels only)
+							$units = 'px;';
+							$value = $property_meta;
+						}
+						break;
+					case 'px':
+						// A legacy field that only ever uses pixels
+						$units = 'px;';
+						$value = $property_meta;
+						break;
+					case null:
+						// A field like opacity or a hex value
+						$units= ';';
+						$value = $property_meta;
+						break;
+				endswitch;
+
+				// something like $styles['max-width'] = 400px;
+				$styles[ $style_property['property'] ] =  $value .  $units;
 			}
 		}
 
@@ -509,25 +585,13 @@ class Smart_Popup {
 		$this->modal_styles_output .= "\t" . $selector . '{' . PHP_EOL;
 
 		foreach ( $properties as $style_property => $style_value ) {
-			// Is this a single input CSS value or a dual input (one where you supply the units) ?
-			if ( is_array( $style_value ) ) {
-				// Make the value for dimensions isn't 0
-				if ( ! empty( $style_value['dimension_value'] ) ) {
-					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value['dimension_value'] . $style_value['dimension_units'] . ';' . PHP_EOL;
-				}
-			} else {
-				// Check if we should append pixels
-				if ( in_array( $style_property, [ 'border-color', 'opacity', 'background-color' ], true ) ) {
-					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . ';' . "\n";
-				} else {
-					$this->modal_styles_output .= "\t\t" . $style_property . ':' . $style_value . 'px;' . "\n";
-				}
-			}
+			// Assemble one style property like max-height
+			$this->modal_styles_output .= "\t\t" . $style_property . ': ' . $style_value . PHP_EOL;
 		}
 
 		// If they defined a border, set a solid style for it
 		if ( array_key_exists( 'border-width', $properties ) ) {
-			$this->modal_styles_output .= "\t\tborder-style:solid;\n";
+			$this->modal_styles_output .= "\t\tborder-style:solid;" . PHP_EOL;
 		}
 
 		$this->modal_styles_output .= "\t}" . PHP_EOL;
