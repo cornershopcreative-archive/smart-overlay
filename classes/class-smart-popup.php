@@ -68,69 +68,66 @@ class Smart_Popup {
 	 */
 	public function __construct() {
 		$this->modal_inner_style_properties = [
-			/* The Background Image is not set here, it's setup as inline JS */
+			/**
+			 * The Background Image is not set here, it's setup as inline JS
+			 *
+			 * 'units' => 'px' means we're "hard-coding" pixels as the units
+			 * 'units' => true means the units are stored in the CMB2 field
+			 * 'units' => false means it doesn't require units like a hex
+			 */
 			[
 				'id' => 'max_width',
 				'property' => 'max-width',
-				// 'px' means we're "hard-coding" pixels as the units
-				'units' => 'px'
+				'units' => 'px',
 			],
 			[
 				'id' => 'max_height',
 				'property' => 'max-height',
-				// true means the units are stored in the CMB2 field
-				'units' => true
+				'units' => true,
 			],
 			[
 				'id' => 'min_height',
 				'property' => 'min-height',
-				// true means the units are stored in the CMB2 field
-				'units' => true
+				'units' => true,
 			],
 			[
 				'id' => 'padding',
 				'property' => 'padding',
-				// 'px' means we're "hard-coding" pixels as the units
-				'units' => 'px'
+				'units' => 'px',
 			],
 			[
 				'id' => 'border_width',
 				'property' => 'border-width',
-				// 'px' means we're "hard-coding" pixels as the units
-				'units' => 'px'
+				'units' => 'px',
 			],
 			[
 				'id' => 'border_radius',
 				'property' => 'border-radius',
-				// 'px' means we're "hard-coding" pixels as the units
-				'units' => 'px'
+				'units' => 'px',
 			],
 			[
 				'id' => 'border_color',
 				'property' => 'border-color',
-				// false means it doesn't require units like a hex
-				'units' => false
+				'units' => false,
 			],
 			[
 				'id' => 'opacity',
 				'property' => 'opacity',
-				// false means it doesn't require units like a hex
-				'units' => false
+				'units' => false,
 			],
 			[
 				'id' => 'background_color',
 				'property' => 'background-color',
-				// false means it doesn't require units like a hex
-				'units' => false
-			]
+				'units' => false,
+			],
 		];
 
 		$this->modal_outer_style_properties = [
 			[
 				'id' => 'background_color_mask',
 				'property' => 'background-color',
-				'units' => false
-			]
+				'units' => false,
+			],
 		];
 
 		$this->config = new stdClass();
@@ -533,7 +530,11 @@ class Smart_Popup {
 		$styles = false;
 
 		foreach ( $properties as $style_property ) {
+			// Finally Get the CMB2 Meta
 			$property_meta = get_post_meta( $this->config->current_id, $this->config->prefix . $style_property['id'] , true );
+			// Define Empty Variables just in case
+			$value = '';
+			$units = '';
 
 			// If there is meta, i.e., the user set a css property, add it to an array
 			if ( ! empty( $property_meta ) ) {
@@ -543,34 +544,31 @@ class Smart_Popup {
 				}
 
 				// Check if the property requires units or not (like a hexcolor)
-				switch ( $style_property['units'] ):
+				switch ( $style_property['units'] ) {
 					case 1:
+					case 'px':
 						// Check if the CMB2 field is one that came with a value and units or just a value
-						if( is_array( $property_meta ) ) {
+						if ( is_array( $property_meta ) ) {
 							$units = $property_meta['dimension_units'] . ';';
 							$value = $property_meta['dimension_value'];
 						} else {
-							//It's a CMB2 field that came with just a value (probably a legacy field that was for pixels only)
+							// It's a CMB2 field that came with just a value (probably a legacy field that was for pixels only)
+							// Or it's a field that the user can never decide its unit (like border-radius)
 							$units = 'px;';
 							$value = $property_meta;
 						}
 						break;
-					case 'px':
-						// A legacy field that only ever uses pixels
-						$units = 'px;';
-						$value = $property_meta;
-						break;
 					case null:
 						// A field like opacity or a hex value
-						$units= ';';
+						$units = ';';
 						$value = $property_meta;
 						break;
-				endswitch;
+				}
 
 				// something like $styles['max-width'] = 400px;
-				$styles[ $style_property['property'] ] =  $value .  $units;
-			}
-		}
+				$styles[ $style_property['property'] ] = $value . $units;
+			}//end if
+		}//end foreach
 
 		return $styles;
 	}
