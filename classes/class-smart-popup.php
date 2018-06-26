@@ -154,6 +154,8 @@ class Smart_Popup {
 		add_action( 'admin_notices', array( $this, 'multiple_instances_admin_notice' ) );
 		add_action( 'post_updated_messages', array( $this, 'cache_admin_notice' ), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
+
+		add_filter( 'gutenberg_can_edit_post_type', '__return_false' );
 	}
 
 
@@ -239,6 +241,7 @@ class Smart_Popup {
 			'exclude_from_search'   => true,
 			'publicly_queryable'    => false,
 			'capability_type'       => 'page',
+			'show_in_rest'			=> false,
 		);
 		register_post_type( 'smart_overlay', $args );
 	}
