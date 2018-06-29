@@ -179,7 +179,7 @@ class Smart_Popup {
 		// Include CMB2 configuration
 		include_once dirname( __FILE__ ) . '/class-admin-fields.php';
 
-		// Instantiate the Conditionals
+		// Instantiate the Conditionals add-on for CMB2 so that its js file loads
 		new CMB2_Conditionals();
 
 		// Initialize CMB2 Custom Fields
