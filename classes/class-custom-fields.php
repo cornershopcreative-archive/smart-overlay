@@ -178,7 +178,7 @@ class Custom_Fields {
 			jQuery(document).ready(function($){
 				$form = $( document.getElementById( 'post' ) );
 				$htmlbody = $( 'html, body' );
-
+				var $first_error_row;
 
 				function checkValidation( evt ){
 					//Get the min, max and unit values
@@ -227,7 +227,19 @@ class Custom_Fields {
 						}, 1000);
 					}
 				}
-				$form.on( 'submit', checkValidation );
+
+				$form.on( 'submit', function(e){
+					e.stopPropagation();
+					checkValidation(e);
+				});
+
+				// When they click anywhere, re-enable the submit button
+				$htmlbody.on('click', function(){
+					if( $('.button-primary').hasClass('disabled') ) {
+						$('.button-primary').removeClass('disabled button-disabled button-primary-disabled');
+						$('#publishing-action').find('.spinner').removeClass('is-active');
+					}
+				});
 			});
 		</script>
 	<?php
