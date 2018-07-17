@@ -27,11 +27,12 @@
 		display: inline-block;
 		overflow: auto;
 		padding: 25px 25px 0;
-		border-bottom: 25px solid transparent;
 		margin-left: 5%;
 		margin-right: 5%;
 		max-height: 95%;
-		background: #fff;
+		background-color: #fff;
+		background-size: cover;
+		background-repeat: no-repeat;
 		cursor: auto;
 		white-space: normal
 	}
