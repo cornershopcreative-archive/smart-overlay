@@ -241,7 +241,7 @@ class Smart_Popup {
 			'exclude_from_search'   => true,
 			'publicly_queryable'    => false,
 			'capability_type'       => 'page',
-			'show_in_rest'			=> false,
+			'show_in_rest'          => false,
 		);
 		register_post_type( 'smart_overlay', $args );
 	}
