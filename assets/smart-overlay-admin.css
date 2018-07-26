@@ -9,3 +9,7 @@
 	top: 4px;
 	right: 80px;
 }
+
+.cmb-td input.range-slider__range {
+	padding: 5px 0;
+}
