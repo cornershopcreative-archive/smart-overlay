@@ -12,7 +12,7 @@
 			context : 'none',
 			suppress: 'never',
 			trigger : 'immediate',
-			amount  : 1,
+			trigger_amount : 1,
 			width   : 600,
 			id      : 'smart-overlay',
 			onMobile: false
@@ -37,10 +37,10 @@
 			openLightbox();
 		// delay by n seconds
 		} else if ( 'delay' == settings.trigger ) {
-			setTimeout( function() { openLightbox(); }, settings.amount * 1000 );
+			setTimeout( function() { openLightbox(); }, settings.trigger_amount * 1000 );
 		} else if ( 'scroll' == settings.trigger ) {
 			$(window).on('scroll', function() {
-				if ( $(window).scrollTop() >= settings.amount ) {
+				if ( $(window).scrollTop() >= settings.trigger_amount ) {
 					openLightbox();
 				}
 			});
@@ -60,7 +60,7 @@
 			});
 		} else if ( 'pages' == settings.trigger ) {
 			var pageCount = $.cookie('smart-overlay-pages-' + settings.id) || 0;
-			if ( ++pageCount >= settings.amount ) {
+			if ( ++pageCount >= settings.trigger_amount ) {
 				openLightbox();
 				$.removeCookie('smart-overlay-pages-' + settings.id, { expires: 90, path: '/' });
 			} else {
@@ -68,7 +68,7 @@
 			}
 		} else if ( 'minutes' == settings.trigger ) {
 			var minuteCount = parseFloat($.cookie('smart-overlay-minutes-' + settings.id)) || 0;
-			if ( minuteCount >= settings.amount ) {
+			if ( minuteCount >= settings.trigger_amount ) {
 				openLightbox();
 				$.removeCookie('smart-overlay-minutes-' + settings.id, { path: '/' });
 			} else {
@@ -115,7 +115,7 @@
 		}
 
 		function lightboxTimer() {
-			var maxMinutes = settings.amount,
+			var maxMinutes = settings.trigger_amount,
 				timePassed = parseFloat($.cookie('smart-overlay-minutes-' + settings.id)) || 0;
 			// increment every half-second (setInterval = 500)
 			timePassed += 0.1;
