@@ -200,6 +200,7 @@ class Admin_Fields {
 					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
 					'pattern'                => '\d*',
 					'min'                    => '0',
+					'step'                   => '0.1',
 				),
 			)
 		);
@@ -424,14 +425,14 @@ class Admin_Fields {
 		if ( empty ( $value ) ) {
 			return null;
 		}
-		return round( absint( $value ) );
+		return absint( $value );
 	}
 
 
 	/**
 	 * Wrapper around abs() that can take 3 arguments, because of how CMB2 invokes callbacks
 	 *
-	 * @return null|int
+	 * @return null|float
 	 */
 	public function smart_overlay_abs( $value ) {
 		// If no value was submitted, return nothing to avoid a 0 being saved to it.
@@ -439,7 +440,7 @@ class Admin_Fields {
 			return null;
 		}
 
-		return round( abs( $value ) );
+		return abs( $value );
 	}
 
 	/**
