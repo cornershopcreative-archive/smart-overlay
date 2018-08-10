@@ -126,6 +126,7 @@ class Admin_Fields {
 				'desc' => __( 'Enter a name or number to uniquely identify this popup. Change this when revising the popup content to reset users’ cookies.', 'smart_overlay' ),
 				'id'   => $this->prefix . 'overlay_identifier',
 				'type' => 'text_small',
+				'sanitization_cb' => [$this, 'smart_overlay_dashes'],
 			)
 		);
 
@@ -260,8 +261,8 @@ class Admin_Fields {
 				'desc'            => __( 'Maximum width (in pixels) of the popup displayed to users. If blank or zero, popup will stretch to accommodate content.', 'smart_overlay' ),
 				'id'              => $this->prefix . 'max_width',
 				'type'            => 'text_small',
-				'sanitization_cb' => 'smart_overlay_absint',
-				'escape_cb'       => 'smart_overlay_absint',
+				'sanitization_cb' => [$this, 'smart_overlay_absint'],
+				'escape_cb'       => [$this, 'smart_overlay_absint'],
 				'attributes'      => array(
 					'type'    => 'number',
 					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
@@ -310,8 +311,8 @@ class Admin_Fields {
 				'desc'              => __( 'Padding (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'padding',
 				'type'              => 'text_small',
-				'sanitization_cb'   => 'smart_overlay_absint',
-				'escape_cb'         => 'smart_overlay_absint',
+				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
+				'escape_cb'         => [$this, 'smart_overlay_absint'],
 				'attributes'        => array(
 					'type'          => 'number',
 					'pattern'       => '\d*',
@@ -327,8 +328,8 @@ class Admin_Fields {
 				'desc'              => __( 'Border width (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'border_width',
 				'type'              => 'text_small',
-				'sanitization_cb'   => 'smart_overlay_absint',
-				'escape_cb'         => 'smart_overlay_absint',
+				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
+				'escape_cb'         => [$this, 'smart_overlay_absint'],
 				'attributes'        => array(
 					'type'          => 'number',
 					'pattern'       => '\d*',
@@ -344,8 +345,8 @@ class Admin_Fields {
 				'desc'              => __( 'Border radius (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'border_radius',
 				'type'              => 'text_small',
-				'sanitization_cb'   => 'smart_overlay_absint',
-				'escape_cb'         => 'smart_overlay_absint',
+				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
+				'escape_cb'         => [$this, 'smart_overlay_absint'],
 				'attributes'        => array(
 					'type'          => 'number',
 					'pattern'       => '\d*',
@@ -374,8 +375,8 @@ class Admin_Fields {
 				'desc'              => __( 'The opacity of the popup. 0 is invisible, 1 is full color.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'opacity',
 				'type'              => 'range_slider',
-				'sanitization_cb'   => 'smart_overlay_absint',
-				'escape_cb'         => 'smart_overlay_absint',
+				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
+				'escape_cb'         => [$this, 'smart_overlay_absint'],
 				'attributes'        => array(
 					'pattern'       => '\d*',
 					'min'           => '0',
@@ -430,5 +431,9 @@ class Admin_Fields {
 	 */
 	public function absint( $value ) {
 		return absint( $value );
+	}
+
+	public function smart_overlay_dashes( $value ) {
+		return sanitize_title_with_dashes( $value );
 	}
 }
