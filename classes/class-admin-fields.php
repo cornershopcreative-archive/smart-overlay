@@ -190,8 +190,8 @@ class Admin_Fields {
 				'desc'            => __( 'Specify the precise quantity/time/amount/number ("N") for the trigger.', 'smart_overlay' ),
 				'id'              => $this->prefix . 'trigger_amount',
 				'type'            => 'text_small',
-				'sanitization_cb' => 'smart_overlay_abs',
-				'escape_cb'       => 'smart_overlay_abs',
+				'sanitization_cb' => array( $this, 'smart_overlay_abs' ),
+				'escape_cb'       => array( $this, 'smart_overlay_abs'),
 				'attributes'      => array(
 					'required'               => true,
 					'data-conditional-id'    => $this->prefix . 'trigger',
@@ -261,8 +261,8 @@ class Admin_Fields {
 				'desc'            => __( 'Maximum width (in pixels) of the popup displayed to users. If blank or zero, popup will stretch to accommodate content.', 'smart_overlay' ),
 				'id'              => $this->prefix . 'max_width',
 				'type'            => 'text_small',
-				'sanitization_cb' => [$this, 'smart_overlay_absint'],
-				'escape_cb'       => [$this, 'smart_overlay_absint'],
+				'sanitization_cb' => array( $this, 'smart_overlay_absint' ),
+				'escape_cb'       => array( $this, 'smart_overlay_absint' ),
 				'attributes'      => array(
 					'type'    => 'number',
 					// we're making it numeric via https://gist.github.com/jtsternberg/c09f5deb7d818d0d170b
@@ -311,8 +311,8 @@ class Admin_Fields {
 				'desc'              => __( 'Padding (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'padding',
 				'type'              => 'text_small',
-				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
-				'escape_cb'         => [$this, 'smart_overlay_absint'],
+				'sanitization_cb'   => array( $this, 'smart_overlay_absint' ),
+				'escape_cb'         => array( $this, 'smart_overlay_absint' ),
 				'attributes'        => array(
 					'type'          => 'number',
 					'pattern'       => '\d*',
@@ -328,8 +328,8 @@ class Admin_Fields {
 				'desc'              => __( 'Border width (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'border_width',
 				'type'              => 'text_small',
-				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
-				'escape_cb'         => [$this, 'smart_overlay_absint'],
+				'sanitization_cb'   => array( $this, 'smart_overlay_absint' ),
+				'escape_cb'         => array( $this, 'smart_overlay_absint' ),
 				'attributes'        => array(
 					'type'          => 'number',
 					'pattern'       => '\d*',
@@ -345,8 +345,8 @@ class Admin_Fields {
 				'desc'              => __( 'Border radius (in pixels) of the popup.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'border_radius',
 				'type'              => 'text_small',
-				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
-				'escape_cb'         => [$this, 'smart_overlay_absint'],
+				'sanitization_cb'   => array( $this, 'smart_overlay_absint' ),
+				'escape_cb'         => array( $this, 'smart_overlay_absint' ),
 				'attributes'        => array(
 					'type'          => 'number',
 					'pattern'       => '\d*',
@@ -375,8 +375,8 @@ class Admin_Fields {
 				'desc'              => __( 'The opacity of the popup. 0 is invisible, 1 is full color.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'opacity',
 				'type'              => 'range_slider',
-				'sanitization_cb'   => [$this, 'smart_overlay_absint'],
-				'escape_cb'         => [$this, 'smart_overlay_absint'],
+				'sanitization_cb'   => array( $this, 'smart_overlay_absint' ),
+				'escape_cb'         => array( $this, 'smart_overlay_absint' ),
 				'attributes'        => array(
 					'pattern'       => '\d*',
 					'min'           => '0',
@@ -415,25 +415,41 @@ class Admin_Fields {
 
 
 	/**
-	 * Wrapper around abs() that can take 3 arguments, because of how CMB2 invokes callbacks
+	 * Wrapper around absint() that can take 3 arguments, because of how CMB2 invokes callbacks
 	 *
-	 * @return absolute value
+	 * @return null|int
 	 */
-	public function abs( $value ) {
-		return abs( $value );
+	public function smart_overlay_absint( $value ) {
+		// If no value was submitted, return nothing to avoid a 0 being saved to it.
+		if ( empty ( $value ) ) {
+			return null;
+		}
+		return round( absint( $value ) );
 	}
 
 
 	/**
-	 * Wrapper around absint() that can take 3 arguments, because of how CMB2 invokes callbacks
+	 * Wrapper around abs() that can take 3 arguments, because of how CMB2 invokes callbacks
 	 *
-	 * @return absolute value
+	 * @return null|int
 	 */
-	public function absint( $value ) {
-		return absint( $value );
+	public function smart_overlay_abs( $value ) {
+		// If no value was submitted, return nothing to avoid a 0 being saved to it.
+		if ( empty ( $value ) ) {
+			return null;
+		}
+
+		return round( abs( $value ) );
 	}
 
+	/**
+	 * Replace whitespaces for dashes
+	 *
+	 * @param string $value
+	 *
+	 * @return string
+	 */
 	public function smart_overlay_dashes( $value ) {
-		return sanitize_title_with_dashes( $value );
+		return sanitize_title_with_dashes( $value, 'save' );
 	}
 }
