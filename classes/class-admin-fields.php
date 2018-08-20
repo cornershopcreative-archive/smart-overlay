@@ -376,8 +376,8 @@ class Admin_Fields {
 				'desc'              => __( 'The opacity of the popup. 0 is invisible, 1 is full color.', 'smart_overlay' ),
 				'id'                => $this->prefix . 'opacity',
 				'type'              => 'range_slider',
-				'sanitization_cb'   => array( $this, 'smart_overlay_absint' ),
-				'escape_cb'         => array( $this, 'smart_overlay_absint' ),
+				'sanitization_cb'   => array( $this, 'smart_overlay_abs' ),
+				'escape_cb'         => array( $this, 'smart_overlay_abs' ),
 				'attributes'        => array(
 					'pattern'       => '\d*',
 					'min'           => '0',
