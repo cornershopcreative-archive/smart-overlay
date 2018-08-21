@@ -150,7 +150,7 @@ class Admin_Fields {
 		$this->config_fields->add_field(
 			array(
 				'name'    => __( 'Once Seen', 'smart_overlay' ),
-				'desc'    => __( 'What should happen after a user sees this popup?', 'smart_overlay' ),
+				'desc'    => __( 'What should happen after a user sees this popup? Note: This setting may be overridden when a user clears their cookies.', 'smart_overlay' ),
 				'id'      => $this->prefix . 'suppress',
 				'type'    => 'select',
 				'options' => array(
