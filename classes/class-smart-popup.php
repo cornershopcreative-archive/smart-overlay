@@ -155,8 +155,7 @@ class Smart_Popup {
 		add_action( 'admin_notices', array( $this, 'multiple_instances_admin_notice' ) );
 		add_action( 'post_updated_messages', array( $this, 'cache_admin_notice' ), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
-
-		add_filter( 'gutenberg_can_edit_post_type', '__return_false' );
+		add_filter( 'gutenberg_can_edit_post_type', array( $this, 'disable_gutenberg'), 10, 2 );
 	}
 
 
@@ -656,5 +655,19 @@ class Smart_Popup {
 			return;
 		}
 		wp_enqueue_style( 'admin-styles', plugins_url( '/assets/smart-overlay-admin.css', dirname( __FILE__ ) ) );
+	}
+
+	/**
+	 * Disable Gutenberg Editor for this post type
+	 *
+	 * @param $can_edit
+	 * @param $post_type
+	 * @return bool
+	 */
+	public function disable_gutenberg( $is_enabled, $post_type ) {
+		if ( 'smart_overlay' == $post_type ) {
+			$is_enabled = false;
+		}
+		return $is_enabled;
 	}
 }
