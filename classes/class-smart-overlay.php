@@ -52,6 +52,7 @@ class Smart_Overlay {
 	 */
 	public function __construct() {
 		$this->smart_overlay_config = new stdClass();
+		$this->smart_overlay_config->disable_on_mobile = '';
 		$this->smart_overlay_post_query();
 		$this->load_dependencies();
 	}
@@ -320,7 +321,10 @@ class Smart_Overlay {
 			// Minor cleanup
 			unset( $meta );
 			return true;
+		} else {
+			$this->smart_overlay_config->display_filter = false;
 		}
+
 
 		return false;
 	}
