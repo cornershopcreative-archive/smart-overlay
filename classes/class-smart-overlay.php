@@ -98,7 +98,10 @@ class Smart_Overlay {
 		// Include CMB2 configuration
 		include_once dirname( __FILE__ ) . '/class-smart-overlay-admin-fields.php';
 
-		// Initialize CMB2 Custom FIelds
+		// Initialize CMB2 Conditionals
+		new CMB2_Conditionals();
+
+		// Initialize CMB2 Custom Fields
 		$fields = new Smart_Overlay_Custom_Fields();
 		$fields->init();
 
