@@ -92,6 +92,8 @@ class Smart_Overlay {
 			include_once dirname( __DIR__ ) . '/includes/CMB2-conditionals/cmb2-conditionals.php';
 		}
 
+		include_once dirname( __FILE__ ) . '/class-smart-overlay-filters.php';
+
 		// Include CMB2 Custom Fields
 		include_once dirname( __FILE__ ) . '/class-smart-overlay-custom-fields.php';
 
@@ -287,6 +289,10 @@ class Smart_Overlay {
 	public function smart_overlay_post_loop() {
 		// Obviously we can only do this if there are some overlay posts defined...
 		if ( $this->smart_overlay_config->overlays->have_posts() ) :
+
+			// Remove the_content filter to prevent other plugins from getting their hands on our popup
+			Smart_Overlay_Filters::smart_overlay_remove_all_filters( 'the_content' );
+
 			while ( $this->smart_overlay_config->overlays->have_posts() ) :
 
 				$this->smart_overlay_config->overlays->the_post();
@@ -301,6 +307,10 @@ class Smart_Overlay {
 				}
 
 			endwhile;
+
+			// Restore the_content filter
+			Smart_Overlay_Filters::smart_overlay_restore_all_filters( 'the_content' );
+
 		endif;
 
 		wp_reset_postdata();
