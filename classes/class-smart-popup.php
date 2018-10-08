@@ -132,8 +132,10 @@ class Smart_Popup {
 
 		$this->config = new stdClass();
 		$this->config->disable_on_mobile = '';
+		$this->config->display_filter = false;
 		$this->post_query();
 		$this->load_dependencies();
+		echo 'hello;';
 	}
 
 	/**
@@ -414,8 +416,6 @@ class Smart_Popup {
 			// Minor cleanup
 			unset( $meta );
 			return true;
-		} else {
-			$this->config->display_filter = false;
 		}
 
 		return false;
