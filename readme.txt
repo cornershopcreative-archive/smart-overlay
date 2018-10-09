@@ -62,7 +62,7 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 
 == Changelog ==
 
-= 0.8.2 =
+= 0.9 =
 * Add new setting fields type to input a dimension and units.
 * Add Min Height setting.
 * Update how the styles are processed for front-end display.
@@ -73,7 +73,7 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 * Fix bug that prevented multiple overlays from displaying correctly.
 * Fix fatal PHP errors that happen in PHP 7.2.
 * Fix small PHP notices.
-* Only display trigger amount field if a proper trigger is selected. 
+* Only display trigger amount field if a proper trigger is selected.
 
 
 
