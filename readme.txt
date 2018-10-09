@@ -62,6 +62,21 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 
 == Changelog ==
 
+= 0.8.2 =
+* Add new setting fields type to input a dimension and units.
+* Add Min Height setting.
+* Update how the styles are processed for front-end display.
+* Refactor how the styles are processed for front-end display.
+* Refactor how the JavaScript is fed its configuration options.
+* Refactor which methods are called in which hooks.
+* Fix JavaScript error for overlays that have no background image.
+* Fix bug that prevented multiple overlays from displaying correctly.
+* Fix fatal PHP errors that happen in PHP 7.2.
+* Fix small PHP notices.
+* Only display trigger amount field if a proper trigger is selected. 
+
+
+
 = 0.8.1 =
 * Bugfixes for overlay styling and file inclusion.
 
