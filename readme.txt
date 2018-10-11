@@ -28,7 +28,7 @@ In addition to those sophisticated trigger controls, you also get options on eac
 * Where to display: On your site’s homepage, on all pages, or all pages except the homepage
 * Scheduling: Configure whether users should see the overlay just once or all the time or periodically based on a schedule.
 * Mobile control: Avoid hits to your SEO by suppressing your overlays from appearing on mobile devices!
-* Width control
+* Width control: Set the max-width of the lightbox/popup.
 * Cookie identifier: Easily change how browsers know about this overlay so you don’t have to save a whole new overlay after fixing a typo if you want it appearing again.
 
 *Note: This plugin uses cookies, so if you’re bound by EU or other regulations requiring you notify users of such, be sure to do so if you’ve got Smart Overlay enabled.*
@@ -62,7 +62,7 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 
 == Changelog ==
 
-= 0.9 =
+= 0.9.0 =
 * Add new setting fields type to input a dimension and units.
 * Add Min Height setting.
 * Update how the styles are processed for front-end display.
@@ -74,8 +74,6 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 * Fix fatal PHP errors that happen in PHP 7.2.
 * Fix small PHP notices.
 * Only display trigger amount field if a proper trigger is selected.
-
-
 
 = 0.8.1 =
 * Bugfixes for overlay styling and file inclusion.

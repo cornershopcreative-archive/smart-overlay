@@ -3,7 +3,7 @@
 Plugin Name: Smart Overlay
 Plugin URI: https://wordpress.org/plugins/smart-overlay/
 Description: Show a highly-configurable lightbox modal on your pages to encourage donations, actions. etc.
-Version: 0.9
+Version: 0.9.0
 Author: Cornershop Creative
 Author URI: https://cornershopcreative.com
 License: GPLv2 or later
@@ -15,7 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 
-define( 'SMART_OVERLAY_VERSION', '0.9' );
+define( 'SMART_OVERLAY_VERSION', '0.9.0' );
 
 
 require_once dirname( __FILE__ ) . '/classes/class-smart-overlay.php';
