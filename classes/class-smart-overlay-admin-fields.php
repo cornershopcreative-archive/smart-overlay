@@ -22,14 +22,12 @@ class Smart_Overlay_Admin_Fields {
 	private $smart_overlay_fields;
 
 
-
 	/**
 	 * Set the post type for CMB2
 	 *
 	 * @var array
 	 */
 	private $post_type;
-
 
 
 	/**
@@ -49,14 +47,12 @@ class Smart_Overlay_Admin_Fields {
 	}
 
 
-
 	/**
 	 * Initialize hooks
 	 */
 	public function init() {
 		add_action( 'cmb2_admin_init', array( $this, 'smart_overlay_custom_fields' ) );
 	}
-
 
 
 	/**

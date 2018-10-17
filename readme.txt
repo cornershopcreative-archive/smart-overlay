@@ -62,6 +62,9 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 
 == Changelog ==
 
+= 0.9.1 =
+* Bugfix to resolve missing files.
+
 = 0.9.0 =
 * Add new setting fields type to input a dimension and units.
 * Add Min Height setting.
