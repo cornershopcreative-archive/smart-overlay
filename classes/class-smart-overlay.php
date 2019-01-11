@@ -468,5 +468,13 @@ class Smart_Overlay {
 		 </div>
 			<?php
 		endif;
+
+		if ( 'edit-smart_overlay' === $current_screen->id ) :
+			?>
+			<div class="notice notice-warning notice-alt">
+				<p><?php esc_html_e( 'Notice: Smart Overlay will go away soon in favor of WP Popup.', 'smart_overlay' ); ?></p>
+			</div>
+			<?php
+		endif;
 	}
 }
