@@ -472,7 +472,21 @@ class Smart_Overlay {
 		if ( 'edit-smart_overlay' === $current_screen->id ) :
 			?>
 			<div class="notice notice-warning notice-alt">
-				<p><?php esc_html_e( 'Notice: Smart Overlay will go away soon in favor of WP Popup.', 'smart_overlay' ); ?></p>
+				<p>
+					<?php
+					$url = 'https://wordpress.org/plugins/wp-pop-up';
+					$notice = sprintf(
+						wp_kses(
+							__( 'Notice: Smart Overlay will go away soon in favor of WP Popup. <a href="%s">Click here</a> for more info.', 'smart_overlay' ),
+							array(
+									'a' => array( 'href' => array() )
+							)
+						),
+						esc_url( $url )
+					);
+					echo $notice;
+					?>
+				</p>
 			</div>
 			<?php
 		endif;
