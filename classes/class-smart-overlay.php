@@ -477,7 +477,7 @@ class Smart_Overlay {
 					$url = 'https://wordpress.org/plugins/wp-pop-up';
 					$notice = sprintf(
 						wp_kses(
-							__( 'Notice: Smart Overlay will go away soon in favor of WP Popup. <a href="%s">Click here</a> for more info.', 'smart_overlay' ),
+							__( 'Alert: Smart Overlay will soon be retired in favor of WP Popup. <a href="%s">Learn more here.</a>', 'smart_overlay' ),
 							array(
 									'a' => array( 'href' => array() )
 							)
