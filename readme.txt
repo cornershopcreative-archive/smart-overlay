@@ -62,6 +62,9 @@ The git repository should be publicly available at [on Bitbucket](https://bitbuc
 
 == Changelog ==
 
+= 0.9.2 =
+* Add new admin notice about the plugin's retirement in favor of WP Popup
+
 = 0.9.1 =
 * Bugfix to resolve missing files.
 

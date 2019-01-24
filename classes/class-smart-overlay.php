@@ -468,5 +468,27 @@ class Smart_Overlay {
 		 </div>
 			<?php
 		endif;
+
+		if ( 'edit-smart_overlay' === $current_screen->id ) :
+			?>
+			<div class="notice notice-warning notice-alt">
+				<p>
+					<?php
+					$url = 'https://wordpress.org/plugins/wp-pop-up';
+					$notice = sprintf(
+						wp_kses(
+							__( 'Alert: Smart Overlay will soon be retired in favor of WP Popup. <a href="%s">Learn more here.</a>', 'smart_overlay' ),
+							array(
+									'a' => array( 'href' => array() )
+							)
+						),
+						esc_url( $url )
+					);
+					echo $notice;
+					?>
+				</p>
+			</div>
+			<?php
+		endif;
 	}
 }
