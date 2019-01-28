@@ -7,9 +7,11 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Looking for a new way to entice your site visitors? Smart Overlay is the lightbox/popup plugin built with performance in mind.
+*Alert: Smart Overlay will soon be retired in favor of WP Popup. [Learn more here.](https://wordpress.org/plugins/wp-pop-up/)*
 
 == Description ==
+
+*Alert: Smart Overlay will soon be retired in favor of WP Popup. [Learn more here.](https://wordpress.org/plugins/wp-pop-up/)*
 
 Smart Overlay is a plugin for implementing whatever you want to call them — modals, lightboxes, overlays or popups — on your site. While it offers fine-tuned control over where and when the lightboxes display, it was developed with the goal of being simple and lightweight: Smart Overlay won’t cause your site to take a big performance hit by loading lots of complicated and extraneous CSS and JavaScript.
 
@@ -31,9 +33,11 @@ In addition to those sophisticated trigger controls, you also get options on eac
 * Width control: Set the max-width of the lightbox/popup.
 * Cookie identifier: Easily change how browsers know about this overlay so you don’t have to save a whole new overlay after fixing a typo if you want it appearing again.
 
+*Alert: Smart Overlay will soon be retired in favor of WP Popup. [Learn more here.](https://wordpress.org/plugins/wp-pop-up/)*
+
 *Note: This plugin uses cookies, so if you’re bound by EU or other regulations requiring you notify users of such, be sure to do so if you’ve got Smart Overlay enabled.*
 
-**Interested in other plugins from Cornershop Creative? We've made [these things](https://cornershopcreative.com/products).**
+**Interested in other plugins from Cornershop Creative? We made [these things](https://cornershopcreative.com/products).**
 
 == Installation ==
 
