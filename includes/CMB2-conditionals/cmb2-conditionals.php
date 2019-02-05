@@ -100,7 +100,8 @@ if ( ! class_exists( 'CMB2_Conditionals' ) ) {
 		 * Decide whether to include the js-script or not.
 		 */
 		public function admin_footer() {
-		    if ( ! in_array( $GLOBALS['pagenow'], array( 'post-new.php', 'post.php' ), true ) ) {
+
+		    if ( 'smart_overlay' != get_current_screen()->post_type ) {
 		    	return;
 		    }
 
