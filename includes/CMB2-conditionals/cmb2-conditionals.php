@@ -101,7 +101,7 @@ if ( ! class_exists( 'CMB2_Conditionals' ) ) {
 		 */
 		public function admin_footer() {
 
-		    if ( 'smart_overlay' != get_current_screen()->post_type ) {
+		    if ( 'smart_overlay' !== get_current_screen()->post_type ) {
 		    	return;
 		    }
 
