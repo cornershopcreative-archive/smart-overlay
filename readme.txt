@@ -2,7 +2,7 @@
 Contributors: drywallbmb, rxnlabs, dannycorner, rpasillas
 Tags: modal window, popup, lightbox
 Requires at least: 4.3
-Tested up to: 5.0.3
+Tested up to: 5.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -65,6 +65,9 @@ Of course, you’re free to use the WYSIWYG and graft on your own custom CSS to 
 The git repository should be publicly available at [on Bitbucket](https://bitbucket.org/cornershopcreative/smart-overlay). Feel free to fork, edit, make pull requests, etc.
 
 == Changelog ==
+
+= 0.9.3 =
+* Bug fix to only enqueue cmb2 js scripts on smart_overlay post type admin screens. This will likely be the last-ever update to Smart Overlay.
 
 = 0.9.2 =
 * Add new admin notice about the plugin's retirement in favor of WP Popup
